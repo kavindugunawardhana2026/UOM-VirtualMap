@@ -1,0 +1,9 @@
+{
+  "name": "UoM Campus Finder",
+  "short_name": "Campus Map",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f2fa",
+  "theme_color": "#4c1d95",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

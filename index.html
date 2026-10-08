@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>UoM Campus Finder</title>
+  <meta name="description" content="Find your way around University of Moratuwa — for IT Faculty Batch 26.">
+  <meta name="theme-color" content="#4c1d95">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="map" aria-label="Campus map"></div>
+
+  <header class="top">
+    <div class="search">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input id="q" type="search" autocomplete="off"
+             placeholder="Search: library, canteen, IT faculty, ගොඩ කැන්ටිම…" aria-label="Search places">
+      <button id="clear-q" class="icon-btn" aria-label="Clear search" hidden>✕</button>
+    </div>
+    <div id="chips" class="chips" role="toolbar" aria-label="Filter by category"></div>
+  </header>
+
+  <div class="map-buttons">
+    <button id="btn-gps" class="fab" title="Show my location" aria-label="Show my location">◎</button>
+    <button id="btn-layers" class="fab" title="Switch map / satellite" aria-label="Switch map style">🛰️</button>
+  </div>
+
+  <section id="sheet" class="sheet" aria-live="polite">
+    <button id="sheet-handle" class="sheet-handle" aria-label="Expand or collapse panel"><span></span></button>
+    <div id="sheet-body" class="sheet-body"></div>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="js/campus-data.js"></script>
+  <script src="js/places.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

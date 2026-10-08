@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkpoint QR Codes</title>
+  <style>
+    :root { --text: #1c1530; --muted: #6b6480; --line: #e4e0ef; --accent: #5b21b6; --bg: #f4f2fa; --panel: #fff; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { --text: #eeeaf6; --muted: #a39cb8; --line: #332d45; --accent: #a78bfa; --bg: #14111d; --panel: #1f1b2b; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, "Segoe UI", "Noto Sans Sinhala", sans-serif; background: var(--bg); color: var(--text); padding: 16px; }
+    .bar { max-width: 900px; margin: 0 auto 16px; }
+    h1 { font-size: 20px; margin: 0 0 6px; }
+    p { color: var(--muted); font-size: 14px; margin: 0 0 12px; line-height: 1.5; }
+    label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    input { flex: 1 1 280px; font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--text); }
+    button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; cursor: pointer; }
+    .warn { color: #b45309; }
+    .grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .card { background: #fff; color: #1c1530; border: 2px solid #5b21b6; border-radius: 16px; padding: 18px; text-align: center; break-inside: avoid; }
+    .card .you { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: #5b21b6; font-weight: 700; }
+    .card h2 { margin: 4px 0 2px; font-size: 20px; }
+    .card .si { font-size: 15px; color: #6b6480; margin-bottom: 10px; }
+    .card .qr { display: inline-block; padding: 8px; background: #fff; }
+    .card .qr img, .card .qr canvas { display: block; width: 200px; height: 200px; }
+    .card .scan { font-weight: 700; margin-top: 8px; }
+    .card .sub { font-size: 12.5px; color: #6b6480; }
+    .card .url { font-size: 10px; color: #9a93ad; word-break: break-all; margin-top: 6px; }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .bar { display: none; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 10mm; }
+      .card { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <h1>Checkpoint QR codes</h1>
+    <p>Print these and stick each one at its checkpoint (gate, junction…). Scanning a code opens the map with routes starting from that exact spot.
+      Checkpoints are defined in <code>js/places.js</code> → <code>CHECKPOINTS</code>.</p>
+    <label for="base">Website address (where the map is hosted)</label>
+    <div class="row">
+      <input id="base" type="url">
+      <button id="regen">Update codes</button>
+      <button id="print" onclick="print()">🖨️ Print</button>
+    </div>
+    <p id="warn" class="warn" hidden>⚠ This address only works on this computer. Host the site first (e.g. GitHub Pages / Netlify) and paste the public address here before printing.</p>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="js/places.js"></script>
+  <script>
+    const base = document.getElementById("base");
+    base.value = location.href.replace(/qr\.html.*$/, "");
+    function render() {
+      let b = base.value.trim();
+      if (b && !b.endsWith("/")) b += "/";
+      document.getElementById("warn").hidden = !/^(file:|https?:\/\/(localhost|127\.|\[::1\]))/.test(b);
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      for (const c of CHECKPOINTS) {
+        const url = `${b}?from=${encodeURIComponent(c.id)}`;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<div class="you">📍 You are here</div><h2></h2><div class="si"></div>
+          <div class="qr"></div><div class="scan">Scan to find your way</div>
+          <div class="sub">ඔබට යාමට අවශ්‍ය ස්ථානය සොයාගන්න scan කරන්න</div><div class="url"></div>`;
+        card.querySelector("h2").textContent = c.name;
+        card.querySelector(".si").textContent = c.si || "";
+        card.querySelector(".url").textContent = url;
+        new QRCode(card.querySelector(".qr"), { text: url, width: 400, height: 400, correctLevel: QRCode.CorrectLevel.M });
+        grid.appendChild(card);
+      }
+    }
+    document.getElementById("regen").onclick = render;
+    render();
+  </script>
+</body>
+</html>

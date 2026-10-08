@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Printable Campus Map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <style>
+    @page { size: A4 landscape; margin: 8mm; }
+    :root { --text: #1c1530; --muted: #6b6480; --accent: #5b21b6; --bg: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { --bg: #ffffff; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, "Segoe UI", "Noto Sans Sinhala", sans-serif; color: var(--text); background: var(--bg); }
+    .bar { padding: 10px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: #f4f2fa; }
+    .bar p { margin: 0; font-size: 13px; color: var(--muted); flex: 1 1 260px; }
+    .bar button, .bar a { font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; }
+    .bar a { background: #e4e0ef; color: var(--text); }
+    .sheet { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 10px; padding: 10px; max-width: 1400px; margin: 0 auto; }
+    header { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 3px solid var(--accent); padding-bottom: 6px; }
+    header h1 { margin: 0; font-size: 22px; }
+    header span { color: var(--muted); font-size: 13px; }
+    #map { width: 100%; height: 640px; border: 1px solid #ddd; border-radius: 8px; background: #f3f1f8; }
+    .legend { font-size: 11.5px; columns: 1; }
+    .legend h3 { font-size: 12px; margin: 8px 0 3px; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+    .legend ol { margin: 0; padding: 0; list-style: none; }
+    .legend li { display: flex; gap: 6px; padding: 1.5px 0; break-inside: avoid; }
+    .num { flex: none; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: #fff; font-size: 10px; font-weight: 700; }
+    .si { color: var(--muted); }
+    .mk { width: 22px; height: 22px; border-radius: 50%; color: #fff; font: 700 11px system-ui; display: grid; place-items: center; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+    .gate { background: #0f172a; color: #fff; font: 700 10px system-ui; padding: 2px 6px; border-radius: 6px; white-space: nowrap; width: max-content; border: 1.5px solid #fff; }
+    .note { font-size: 11px; color: var(--muted); margin-top: 10px; }
+    @media (max-width: 760px) { .sheet { grid-template-columns: 1fr; } #map { height: 480px; } }
+    @media print {
+      .bar { display: none; }
+      .sheet { grid-template-columns: minmax(0, 1fr) 230px; padding: 0; max-width: none; }
+      #map { height: 175mm; }
+      .leaflet-control-container { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <p>Print this page or choose <b>Save as PDF</b> in the print dialog (A4 landscape). The PDF works offline — share it in the batch group.</p>
+    <a href="index.html">← Back to the live map</a>
+    <button onclick="print()">🖨️ Print / Save PDF</button>
+  </div>
+  <div class="sheet">
+    <header><h1 id="title"></h1><span id="sub"></span></header>
+    <div id="map"></div>
+    <aside class="legend" id="legend"></aside>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="js/campus-data.js"></script>
+  <script src="js/places.js"></script>
+  <script>
+    document.getElementById("title").textContent = `University of Moratuwa — Campus Map`;
+    document.getElementById("sub").textContent = `${EVENT.title} · ${EVENT.subtitle}`;
+    const map = L.map("map", { zoomControl: true, attributionControl: true, zoomSnap: 0.25 });
+    map.attributionControl.addAttribution("© OpenStreetMap contributors");
+    L.polygon(CAMPUS_DATA.campus, { color: "#5b21b6", weight: 2, dashArray: "6 6", fill: false }).addTo(map);
+    for (const r of CAMPUS_DATA.roads) L.polyline(r, { color: "#cfc8e2", weight: 9 }).addTo(map);
+    for (const r of CAMPUS_DATA.roads) L.polyline(r, { color: "#fff", weight: 6 }).addTo(map);
+    for (const [id, ring] of Object.entries(CAMPUS_DATA.buildings)) {
+      const own = PLACES.find((p) => p.osm === id);
+      const color = own ? (CATEGORIES[own.cat] || CATEGORIES.other).color : "#b8aed3";
+      L.polygon(ring, { color, weight: own ? 1.5 : 1, fillColor: own ? color : "#ddd6ee", fillOpacity: own ? 0.25 : 0.8 }).addTo(map);
+    }
+
+    // Number places by category so the legend reads in groups.
+    const order = Object.keys(CATEGORIES);
+    const sorted = [...PLACES].sort((a, b) => order.indexOf(a.cat) - order.indexOf(b.cat));
+    sorted.forEach((p, i) => {
+      const c = CATEGORIES[p.cat] || CATEGORIES.other;
+      L.marker(p.at, { icon: L.divIcon({ className: "", iconSize: [22, 22], html: `<div class="mk" style="background:${c.color}">${i + 1}</div>` }) }).addTo(map);
+    });
+    for (const cp of CHECKPOINTS) {
+      const el = document.createElement("div"); el.className = "gate"; el.textContent = "QR · " + cp.name.split(" (")[0];
+      L.marker(cp.at, { icon: L.divIcon({ className: "", iconSize: null, iconAnchor: [10, 8], html: el.outerHTML }) }).addTo(map);
+    }
+    const fit = () => { map.invalidateSize(); map.fitBounds(L.latLngBounds(CAMPUS_DATA.campus), { padding: [8, 8] }); };
+    fit();
+    addEventListener("resize", fit);
+    addEventListener("beforeprint", fit);
+
+    const legend = document.getElementById("legend");
+    let html = "", cur = null, n = 0;
+    for (const p of sorted) {
+      n++;
+      const c = CATEGORIES[p.cat] || CATEGORIES.other;
+      if (p.cat !== cur) { if (cur) html += "</ol>"; html += `<h3>${c.icon} ${c.label}</h3><ol>`; cur = p.cat; }
+      const name = p.name.replace(/[&<>]/g, "");
+      html += `<li><span class="num" style="background:${c.color}">${n}</span><span>${name}${p.si ? ` <span class="si">· ${p.si}</span>` : ""}</span></li>`;
+    }
+    html += "</ol><p class='note'>QR boxes = scan points. Scan one to open the live map with directions from that spot.</p>";
+    legend.innerHTML = html;
+  </script>
+</body>
+</html>
