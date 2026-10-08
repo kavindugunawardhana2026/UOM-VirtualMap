@@ -5,18 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>UoM Campus Finder</title>
   <meta name="description" content="Find your way around University of Moratuwa — for IT Faculty Batch 26.">
-  <meta name="theme-color" content="#4c1d95">
+  <meta name="theme-color" content="#12082e">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
+  <!-- Welcome screen (first visit in a session; reopen with the "26" button) -->
+  <div id="intro" class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+    <canvas aria-hidden="true"></canvas>
+    <button id="intro-skip" class="intro-skip">Skip ›</button>
+    <div class="intro-inner">
+      <svg class="intro-pin" viewBox="0 0 64 80" aria-hidden="true">
+        <defs>
+          <linearGradient id="pinG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#a78bfa"/><stop offset=".55" stop-color="#e879f9"/><stop offset="1" stop-color="#fbbf24"/>
+          </linearGradient>
+        </defs>
+        <path class="fill" d="M32 4C18 4 7 15 7 29c0 19 25 45 25 45s25-26 25-45C57 15 46 4 32 4z" fill="url(#pinG)"/>
+        <path class="stroke" d="M32 4C18 4 7 15 7 29c0 19 25 45 25 45s25-26 25-45C57 15 46 4 32 4z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+        <circle class="dotc" cx="32" cy="29" r="9" fill="#fff"/>
+      </svg>
+      <div class="intro-badge">BATCH <b>26</b> · FIT</div>
+      <p class="intro-hello" aria-hidden="true"><span>ආයුබෝවන් 🙏</span><span>வணக்கம் 🙏</span><span>Welcome 👋</span></p>
+      <h1 class="intro-title" id="intro-title">
+        <span class="line"><span>University of</span></span>
+        <span class="line"><span class="grad">Moratuwa</span></span>
+      </h1>
+      <p class="intro-sub">Your campus, in your pocket — find any place in seconds.</p>
+      <div class="intro-where"></div>
+      <ul class="intro-feats">
+        <li>🔍 Find any place</li>
+        <li>🧭 Step-by-step routes</li>
+        <li>🔭 360° walk-through</li>
+      </ul>
+      <button id="intro-go" class="cta">Start exploring <span class="arr">→</span></button>
+    </div>
+  </div>
+
+  <script>
+    // Seen the welcome screen already this session? Hide it before first paint.
+    try { if (sessionStorage.getItem("introSeen")) document.getElementById("intro").hidden = true; } catch (_) {}
+  </script>
+
   <div id="map" aria-label="Campus map"></div>
 
   <header class="top">
     <div class="search">
-      <span class="search-icon" aria-hidden="true">🔍</span>
+      <button id="brand" class="brand" title="Welcome screen" aria-label="Show welcome screen"><small>BATCH</small>26</button>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" autocomplete="off"
              placeholder="Search: library, canteen, IT faculty, ගොඩ කැන්ටිම…" aria-label="Search places">
       <button id="clear-q" class="icon-btn" aria-label="Clear search" hidden>✕</button>
@@ -25,8 +68,9 @@
   </header>
 
   <div class="map-buttons">
-    <button id="btn-gps" class="fab" title="Show my location" aria-label="Show my location">◎</button>
-    <button id="btn-layers" class="fab" title="Switch map / satellite" aria-label="Switch map style">🛰️</button>
+    <button id="btn-gps" class="fab" aria-label="Show my location">◎<span class="tip">My location</span></button>
+    <button id="btn-layers" class="fab" aria-label="Switch map style">🛰️<span class="tip">Satellite view</span></button>
+    <button id="btn-tour" class="fab" aria-label="Open 360° tour">🔭<span class="tip">360° tour</span></button>
   </div>
 
   <section id="sheet" class="sheet" aria-live="polite">
@@ -34,10 +78,14 @@
     <div id="sheet-body" class="sheet-body"></div>
   </section>
 
+  <script src="js/fx.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="js/campus-data.js"></script>
   <script src="js/places.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
   <script src="js/router.js"></script>
+  <script src="js/tour.js"></script>
+  <script src="js/tour-viewer.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

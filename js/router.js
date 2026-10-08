@@ -23,7 +23,7 @@
   }
   function link(a, b, w) { adj[a].push([b, w]); adj[b].push([a, w]); }
 
-  for (const road of window.CAMPUS_DATA.roads) {
+  for (const road of window.CAMPUS_DATA.roads.concat(window.EXTRA_PATHS || [])) {
     for (let i = 1; i < road.length; i++) {
       const a = nodeId(road[i - 1]), b = nodeId(road[i]);
       if (a === b) continue;
@@ -55,12 +55,30 @@
     const d = new Float64Array(n).fill(Infinity), prev = new Int32Array(n).fill(-1), done = new Uint8Array(n);
     d[src] = 0;
     const nbrs = (u) => (u < adj.length ? adj[u] : []).concat(extra.get(u) || []);
-    for (;;) {
-      let u = -1;
-      for (let i = 0; i < n; i++) if (!done[i] && d[i] < Infinity && (u < 0 || d[i] < d[u])) u = i;
-      if (u < 0 || u === dst) break;
+    // Small binary heap of [dist, node].
+    const heap = [[0, src]];
+    const push = (x) => { heap.push(x); let i = heap.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (heap[p][0] <= x[0]) break; heap[i] = heap[p]; i = p; } heap[i] = x; };
+    const pop = () => {
+      const top = heap[0], last = heap.pop();
+      if (heap.length) {
+        let i = 0;
+        for (;;) {
+          let c = 2 * i + 1;
+          if (c >= heap.length) break;
+          if (c + 1 < heap.length && heap[c + 1][0] < heap[c][0]) c++;
+          if (heap[c][0] >= last[0]) break;
+          heap[i] = heap[c]; i = c;
+        }
+        heap[i] = last;
+      }
+      return top;
+    };
+    while (heap.length) {
+      const [, u] = pop();
+      if (done[u]) continue;
+      if (u === dst) break;
       done[u] = 1;
-      for (const [v, w] of nbrs(u)) if (d[u] + w < d[v]) { d[v] = d[u] + w; prev[v] = u; }
+      for (const [v, w] of nbrs(u)) if (d[u] + w < d[v]) { d[v] = d[u] + w; prev[v] = u; push([d[v], v]); }
     }
     if (d[dst] === Infinity) return null;
     const out = [];
@@ -153,5 +171,27 @@
     return steps;
   }
 
-  window.CampusRouter = { route, dist, snap };
+  // Point `m` metres along a path.
+  function along(path, m) {
+    for (let i = 1; i < path.length; i++) {
+      const seg = dist(path[i - 1], path[i]);
+      if (m <= seg) { const t = seg ? m / seg : 0; return [path[i - 1][0] + t * (path[i][0] - path[i - 1][0]), path[i - 1][1] + t * (path[i][1] - path[i - 1][1])]; }
+      m -= seg;
+    }
+    return path[path.length - 1];
+  }
+  // Shortest distance (m) from p to a polyline.
+  function distToPath(p, path) {
+    const P = xy(p);
+    let best = Infinity;
+    for (let i = 1; i < path.length; i++) {
+      const A = xy(path[i - 1]), B = xy(path[i]);
+      const dx = B[0] - A[0], dy = B[1] - A[1], l = dx * dx + dy * dy;
+      const t = l ? Math.max(0, Math.min(1, ((P[0] - A[0]) * dx + (P[1] - A[1]) * dy) / l)) : 0;
+      best = Math.min(best, Math.hypot(A[0] + t * dx - P[0], A[1] + t * dy - P[1]));
+    }
+    return best;
+  }
+
+  window.CampusRouter = { route, dist, snap, bearing, along, distToPath };
 })();
