@@ -296,7 +296,7 @@
 
   // Shortcut tiles on the home screen (a place id or a category).
   const QUICK = [
-    { label: "IT Faculty", icon: "🎓", go: "it-faculty", color: "#7c3aed" },
+    { label: "IT Faculty", icon: "🎓", go: "it-faculty", color: "#2563eb" },
     { label: "Canteens", icon: "🍛", cat: "food", color: "#ea580c" },
     { label: "Library", icon: "📚", go: "library", color: "#2563eb" },
     { label: "Medical", icon: "🏥", go: "medical", color: "#dc2626" },

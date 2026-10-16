@@ -30,7 +30,7 @@
     c.width = innerWidth * dpr; c.height = innerHeight * dpr;
     document.body.appendChild(c);
     const g = c.getContext("2d"); g.scale(dpr, dpr);
-    const colors = ["#7c3aed", "#d946ef", "#f59e0b", "#fde68a", "#60a5fa", "#34d399", "#f472b6"];
+    const colors = ["#1e3a8a", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#38bdf8", "#0ea5e9"];
     const parts = Array.from({ length: n }, () => {
       const a = Math.random() * Math.PI * 2, s = 4 + Math.random() * 9;
       return { x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 6, r: Math.random() * 6.28, vr: (Math.random() - .5) * .4,
@@ -123,7 +123,7 @@
       }
       for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
         const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < 110) { g.strokeStyle = `rgba(196,181,253,${(1 - d / 110) * .35})`; g.lineWidth = 1; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+        if (d < 110) { g.strokeStyle = `rgba(96,165,250,${(1 - d / 110) * .35})`; g.lineWidth = 1; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
       }
       raf = requestAnimationFrame(frame);
     })();

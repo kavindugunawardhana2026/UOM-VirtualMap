@@ -49,7 +49,7 @@ window.EXTRA_PATHS = [
 ];
 
 window.CATEGORIES = {
-  faculty:  { label: "Faculties & lecture", icon: "🎓", color: "#7c3aed" },
+  faculty:  { label: "Faculties & lecture", icon: "🎓", color: "#2563eb" },
   services: { label: "Offices & services",  icon: "🏛️", color: "#2563eb" },
   food:     { label: "Food",                icon: "🍛", color: "#ea580c" },
   health:   { label: "Medical",             icon: "🏥", color: "#dc2626" },
