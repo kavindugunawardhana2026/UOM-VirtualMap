@@ -1,5 +1,5 @@
-// Visual effects: welcome intro, particle field, confetti, toasts, count-up
-// numbers, 3D tilt and ripples. No dependencies.
+// Visual effects: welcome intro, starfield, scrambled-text reveals, confetti,
+// toasts, count-up numbers, 3D tilt and ripples. No dependencies.
 (function () {
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const store = {
@@ -30,7 +30,7 @@
     c.width = innerWidth * dpr; c.height = innerHeight * dpr;
     document.body.appendChild(c);
     const g = c.getContext("2d"); g.scale(dpr, dpr);
-    const colors = ["#1e3a8a", "#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#38bdf8", "#0ea5e9"];
+    const colors = ["#eef4ff", "#9cc0ff", "#4f8cff", "#3a7bff", "#1f5fe0", "#7dd3fc", "#ff7aa8"];
     const parts = Array.from({ length: n }, () => {
       const a = Math.random() * Math.PI * 2, s = 4 + Math.random() * 9;
       return { x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 6, r: Math.random() * 6.28, vr: (Math.random() - .5) * .4,
@@ -102,64 +102,200 @@
     })();
   }
 
-  // --------------------------------------------------- particle field
-  function particles(canvas) {
+  // ------------------------------------------------------- scramble text
+  // Letters start as random glyphs and settle into the real text, left to
+  // right. Runs on every [data-scramble] inside `root` (or `root` itself).
+  // Only Latin letters and digits are scrambled; emoji and Sinhala/Tamil
+  // stay as they are. The same text is not re-scrambled within a few seconds,
+  // so frequent re-renders (GPS updates, typing) don't keep flickering.
+  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const recent = new Map();
+  const originals = new WeakMap(); // text node -> its real text, so overlapping runs never lock in glyphs
+  let runs = 0;
+  function scramble(root = document, { delay = 0, duration = 900 } = {}) {
+    if (reduced) return;
+    const els = root.matches?.("[data-scramble]") ? [root] : [...root.querySelectorAll("[data-scramble]")];
+    els.forEach((el, k) => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) {
+        const n = walker.currentNode;
+        if (!originals.has(n)) originals.set(n, n.nodeValue);
+        nodes.push({ n, text: originals.get(n) });
+      }
+      const key = nodes.map((x) => x.text).join("");
+      if (performance.now() - (recent.get(key) ?? -1e9) < 6000) return;
+      recent.set(key, performance.now());
+      const id = el.dataset.scrambleRun = String(++runs);
+      const finish = () => { if (el.dataset.scrambleRun === id) for (const x of nodes) x.n.nodeValue = x.text; };
+      const total = key.length || 1;
+      const t0 = performance.now() + delay + k * 120;
+      let last = 0;
+      (function frame(t) {
+        if (!el.isConnected || el.dataset.scrambleRun !== id) return;
+        const p = Math.max(0, (t - t0) / duration);
+        if (p >= 1) return finish();
+        if (t - last > 45) {
+          last = t;
+          let i = 0;
+          for (const x of nodes) {
+            let out = "";
+            for (const ch of x.text) {
+              const settled = i / total < p * 1.15 - 0.15;
+              out += settled || !/[A-Za-z0-9]/.test(ch) ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+              i += ch.length;
+            }
+            x.n.nodeValue = out;
+          }
+        }
+        requestAnimationFrame(frame);
+      })(performance.now());
+      // Backstop in case animation frames are paused (background tab).
+      setTimeout(finish, delay + k * 120 + duration + 1500);
+    });
+  }
+
+  // ------------------------------------------------------- starfield
+  // Three depth layers of twinkling stars that drift and lean away from the
+  // pointer, plus the odd shooting star.
+  function starfield(canvas) {
     if (reduced) return () => {};
     const g = canvas.getContext("2d");
-    let w, h, raf, mouse = { x: -999, y: -999 };
+    let w, h, raf, stars = [], mx = 0, my = 0, ox = 0, oy = 0, shoot = null;
     const dpr = Math.min(devicePixelRatio || 1, 2);
-    const resize = () => { w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = w * dpr; canvas.height = h * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const resize = () => {
+      w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = w * dpr; canvas.height = h * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.min(520, Math.round((w * h) / 2600));
+      stars = Array.from({ length: n }, () => {
+        const z = Math.random();
+        return { x: Math.random() * w, y: Math.random() * h, z, r: .25 + z * z * 1.4, a: .25 + Math.random() * .75,
+          tw: Math.random() * 6.28, ts: .5 + Math.random() * 2, hue: Math.random() < .18 ? 218 : Math.random() < .1 ? 200 : 0 };
+      });
+    };
     resize(); addEventListener("resize", resize);
-    const n = Math.min(80, Math.round((w * h) / 14000));
-    const pts = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35, r: Math.random() * 1.8 + .6 }));
-    canvas.parentElement.addEventListener("pointermove", (e) => { mouse = { x: e.clientX, y: e.clientY }; });
-    (function frame() {
+    const onMove = (e) => { mx = e.clientX / w - .5; my = e.clientY / h - .5; };
+    canvas.parentElement.addEventListener("pointermove", onMove);
+    (function frame(t) {
+      t = t || 0;
+      ox += (mx - ox) * .04; oy += (my - oy) * .04;
       g.clearRect(0, 0, w, h);
-      for (const p of pts) {
-        const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
-        if (d < 120) { p.x += dx / d * 1.2; p.y += dy / d * 1.2; }
-        p.x = (p.x + p.vx + w) % w; p.y = (p.y + p.vy + h) % h;
-        g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.28); g.fillStyle = "rgba(255,255,255,.75)"; g.fill();
+      for (const s of stars) {
+        s.y -= .02 + s.z * .08; if (s.y < -2) { s.y = h + 2; s.x = Math.random() * w; }
+        const x = s.x - ox * 40 * s.z, y = s.y - oy * 40 * s.z;
+        const a = s.a * (.55 + .45 * Math.sin(s.tw + t / 1000 * s.ts));
+        g.fillStyle = s.hue ? `hsla(${s.hue},100%,85%,${a})` : `rgba(238,244,255,${a})`;
+        g.beginPath(); g.arc(x, y, s.r, 0, 6.28); g.fill();
+        if (s.r > 1.3) { g.fillStyle = `rgba(150,185,255,${a * .12})`; g.beginPath(); g.arc(x, y, s.r * 4, 0, 6.28); g.fill(); }
       }
-      for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
-        const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < 110) { g.strokeStyle = `rgba(96,165,250,${(1 - d / 110) * .35})`; g.lineWidth = 1; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+      if (!shoot && Math.random() < .004) shoot = { x: Math.random() * w * .8 + w * .2, y: Math.random() * h * .4, life: 0 };
+      if (shoot) {
+        shoot.life += .02;
+        const len = 140, x = shoot.x - shoot.life * 420, y = shoot.y + shoot.life * 180;
+        const grd = g.createLinearGradient(x, y, x + len, y - len * .43);
+        grd.addColorStop(0, `rgba(238,244,255,${.9 * (1 - shoot.life)})`); grd.addColorStop(1, "rgba(79,140,255,0)");
+        g.strokeStyle = grd; g.lineWidth = 1.4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + len, y - len * .43); g.stroke();
+        if (shoot.life >= 1) shoot = null;
       }
       raf = requestAnimationFrame(frame);
     })();
-    return () => { cancelAnimationFrame(raf); removeEventListener("resize", resize); };
+    return () => { cancelAnimationFrame(raf); removeEventListener("resize", resize); canvas.parentElement.removeEventListener("pointermove", onMove); };
+  }
+
+  // ---------------------------------------------------------- landing
+  // Scroll effects for the landing page: sections fade/blur in and decode
+  // their headings, the hero photo drifts slower than the page, the orb
+  // changes shape for each numbered step, plus a progress bar and nav tint.
+  function landing(el) {
+    if (el.dataset.ready) return;
+    el.dataset.ready = "1";
+    const reveal = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        e.target.classList.add("in");
+        scramble(e.target, { delay: 150 });
+        countUp(e.target);
+        reveal.unobserve(e.target);
+      }
+    }, { root: el, rootMargin: "0px 0px -12% 0px", threshold: 0.12 });
+    el.querySelectorAll(".reveal").forEach((n) => reveal.observe(n));
+
+    const orb = el.querySelector(".l-orb");
+    const steps = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting && orb) orb.dataset.step = e.target.dataset.step;
+    }, { root: el, rootMargin: "-45% 0px -45% 0px" });
+    el.querySelectorAll(".l-step").forEach((n) => steps.observe(n));
+
+    const photo = el.querySelector(".l-hero-photo"), inner = el.querySelector(".l-hero .intro-inner");
+    const card = el.querySelector(".l-about-card"), bar = el.querySelector(".l-progress");
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const st = el.scrollTop, h = el.clientHeight;
+      bar.style.setProperty("--p", Math.min(1, st / Math.max(1, el.scrollHeight - h)));
+      el.classList.toggle("scrolled", st > 40);
+      if (reduced) return;
+      if (st < h * 1.2) {
+        photo.style.transform = `translate3d(0, ${st * 0.38}px, 0) scale(${1 + st / h * 0.12})`;
+        inner.style.transform = `translate3d(0, ${st * 0.18}px, 0)`;
+        inner.style.opacity = Math.max(0, 1 - st / (h * 0.65));
+      }
+      if (card) {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--py", `${((r.top + r.height / 2) - h / 2) * -0.08}px`);
+      }
+    };
+    el.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    // In-page links scroll the landing, not the window, and leave the URL alone.
+    el.querySelectorAll('a[href^="#"]').forEach((a) => (a.onclick = (e) => {
+      e.preventDefault();
+      el.querySelector(a.getAttribute("href"))?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+    }));
+    update();
   }
 
   // ---------------------------------------------------------- intro
   // Shown once per browser session (and again from the "26" button).
+  // Resolves true when closed from the page; buttons with data-place also
+  // fire a "landing:go" event so the map can open that place.
   function intro({ where = "", force = false } = {}) {
     const el = document.getElementById("intro");
     if (!el) return Promise.resolve(false);
     if (!force && store.get("introSeen")) { el.hidden = true; return Promise.resolve(false); }
     el.hidden = false; el.classList.remove("out");
+    el.style.scrollBehavior = "auto"; el.scrollTop = 0; el.style.scrollBehavior = "";
     document.documentElement.style.setProperty("--ui-delay", "0s");
     el.querySelector(".intro-where").textContent = where;
-    // Restart CSS animations when re-opened.
-    el.querySelectorAll("*").forEach((n) => { n.style.animation = "none"; void n.offsetWidth; n.style.animation = ""; });
-    const stop = particles(el.querySelector("canvas"));
+    // Restart the hero's CSS animations when re-opened.
+    el.querySelectorAll(".l-hero *, .intro-nav").forEach((n) => { n.style.animation = "none"; void n.offsetWidth; n.style.animation = ""; });
+    const stop = starfield(el.querySelector("canvas"));
+    landing(el);
+    recent.clear();
+    el.querySelectorAll(".l-hero [data-scramble]").forEach((n, i) => scramble(n, { delay: 700 + i * 260, duration: 1100 }));
     const go = el.querySelector("#intro-go");
     go.focus({ preventScroll: true });
     return new Promise((resolve) => {
-      const done = (celebrate) => {
+      const done = (from, place) => {
         store.set("introSeen", "1");
-        if (celebrate) { const r = go.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 180); }
+        if (from) { const r = from.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 180); }
+        if (place) dispatchEvent(new CustomEvent("landing:go", { detail: place }));
         el.classList.add("out");
         document.documentElement.style.setProperty("--ui-delay", ".35s");
         // Re-run the UI entrance animations behind the fading intro.
         document.querySelectorAll(".top, .sheet, .map-buttons, .chip").forEach((n) => { n.style.animation = "none"; void n.offsetWidth; n.style.animation = ""; });
+        // The home card was drawn behind the intro; decode its headline now that it's visible.
+        recent.clear(); scramble(document.getElementById("sheet") || document, { delay: 450 });
         setTimeout(() => { el.hidden = true; stop(); }, 850);
         resolve(true);
       };
-      go.onclick = () => done(true);
-      el.querySelector("#intro-skip").onclick = () => done(false);
-      el.onkeydown = (e) => { if (e.key === "Escape") done(false); };
+      el.onclick = (e) => {
+        const b = e.target.closest("#intro-go, [data-enter], [data-place], #intro-skip");
+        if (!b) return;
+        if (b.dataset.place) done(null, b.dataset.place);
+        else done(b.id === "intro-skip" ? null : b);
+      };
+      el.onkeydown = (e) => { if (e.key === "Escape") done(null); };
     });
   }
 
-  window.FX = { toast, confetti, countUp, typePlaceholder, intro, reduced };
+  window.FX = { toast, confetti, countUp, typePlaceholder, intro, scramble, reduced };
 })();

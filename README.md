@@ -10,10 +10,13 @@ drawn on the map with turn-by-turn directions, a photo and the floor/room.
 
 ## Look & feel
 
-Animated welcome screen (once per visit — tap the **26** button to see it again), pins that drop in,
-a route line that draws itself with a glowing "comet" walking it, confetti when you arrive in the 360° tour,
-light & dark themes that follow the phone, and everything calms down automatically for people who turn
-animations off on their phone (reduced motion). Effects live in `js/fx.js`, styles in `css/app.css`.
+A scrolling landing page opens first (once per visit — tap the **26** button to see it again): the faculty
+photo as the hero, then sections about the faculty, its departments and degrees, a "places you'll need" list
+that opens the map at that place, and a final "Open the campus map" button. Headings decode from scrambled
+letters as they scroll in, the hero photo drifts in parallax, and a glossy orb changes shape for each numbered
+step. The map itself uses a dark navy + electric-blue theme, with pins that drop in and a route line that draws
+itself with a glowing "comet" walking it. Everything calms down for people who turn animations off on their
+phone (reduced motion). Effects live in `js/fx.js`, styles in `css/app.css`, landing text in `index.html`.
 
 ## Run it on your computer
 

@@ -173,7 +173,7 @@
     if (!r) return;
     const route = css("--route");
     L.polyline(r.path, { color: route, weight: 18, opacity: 0.18, interactive: false, lineCap: "round", lineJoin: "round", className: "route-glow" }).addTo(routeLayer);
-    L.polyline(r.path, { color: "#fff", weight: 10, opacity: 0.95, interactive: false, lineCap: "round", lineJoin: "round" }).addTo(routeLayer);
+    L.polyline(r.path, { color: css("--route-casing"), weight: 10, opacity: 0.95, interactive: false, lineCap: "round", lineJoin: "round" }).addTo(routeLayer);
     const main = L.polyline(r.path, { color: route, weight: 6, opacity: 1, interactive: false, lineCap: "round", lineJoin: "round", className: "route-main" }).addTo(routeLayer);
     L.polyline(r.path, { color: "#fff", weight: 3, opacity: 0.9, interactive: false, lineCap: "round", className: "route-flow" }).addTo(routeLayer);
     L.marker(from, { interactive: false, zIndexOffset: 1500, icon: L.divIcon({ className: "", iconSize: [22, 22], html: '<div class="start-marker"></div>' }) }).addTo(routeLayer);
@@ -296,10 +296,10 @@
 
   // Shortcut tiles on the home screen (a place id or a category).
   const QUICK = [
-    { label: "IT Faculty", icon: "🎓", go: "it-faculty", color: "#2563eb" },
-    { label: "Canteens", icon: "🍛", cat: "food", color: "#ea580c" },
-    { label: "Library", icon: "📚", go: "library", color: "#2563eb" },
-    { label: "Medical", icon: "🏥", go: "medical", color: "#dc2626" },
+    { label: "IT Faculty", icon: "🎓", go: "it-faculty", color: "#4f8cff" },
+    { label: "Canteens", icon: "🍛", cat: "food", color: "#ffa36b" },
+    { label: "Library", icon: "📚", go: "library", color: "#7dd3fc" },
+    { label: "Medical", icon: "🏥", go: "medical", color: "#ff7aa8" },
   ].filter((q) => q.cat || byId[q.go]);
 
   function renderHome() {
@@ -310,8 +310,8 @@
     const intro = !browsing ? "" : `
       <section class="hero">
         <span class="orb o1"></span><span class="orb o2"></span>
-        <p class="hero-kicker">${state.scannedQR ? `📍 You're at ${esc(startInfo().name)}` : "Batch 26 · Faculty of IT"}</p>
-        <h1>Hey there <span class="wave">👋</span><br><span class="gold">Where to?</span></h1>
+        <p class="hero-kicker">${state.scannedQR ? `📍 You're at ${esc(startInfo().name)}` : "01 — Batch 26 · Faculty of IT"}</p>
+        <h1 data-scramble>Hey there <span class="wave">👋</span><br><span class="gold">Where to?</span></h1>
         <p>${esc(EVENT.title)} Tap a place, follow the glowing line.</p>
         ${countdownHTML()}
       </section>
@@ -344,6 +344,7 @@
       if (!isDesktop()) $("#q").blur();
     }));
     body.querySelectorAll("[data-cat]").forEach((b) => (b.onclick = () => setCat(b.dataset.cat)));
+    FX.scramble(body);
     const th = $("#tour-home");
     if (th) th.onclick = () => openTour(startSpot().id);
   }
@@ -382,7 +383,7 @@
     body.innerHTML = `
       <div class="place-hero" style="--c:${c.color}">
         <div class="ph-emoji">${c.icon}</div>
-        <div><span class="ph-cat">${esc(c.label)}</span><h2>${esc(room ? room.name : p.name)}</h2><div class="si">${esc(room ? `in ${p.name}` : p.si || "")}</div></div>
+        <div><span class="ph-cat">${esc(c.label)}</span><h2 data-scramble>${esc(room ? room.name : p.name)}</h2><div class="si">${esc(room ? `in ${p.name}` : p.si || "")}</div></div>
         <button class="icon-btn back" id="back" aria-label="Back to list">✕</button>
       </div>
       ${room?.floor || room?.code ? `<div class="badges">
@@ -409,6 +410,7 @@
       </div>`;
 
     FX.countUp(body);
+    FX.scramble(body);
     $("#back").onclick = clearSelection;
     $("#share").onclick = share;
     body.querySelectorAll("[data-room]").forEach((b) => (b.onclick = () => select(p.id, b.dataset.room)));
@@ -505,7 +507,7 @@
   $("#btn-layers").onclick = () => {
     base = base === "map" ? "sat" : "map";
     const b = $("#btn-layers");
-    b.firstChild.nodeValue = base === "sat" ? "🗺️" : "🛰️";
+    b.classList.toggle("sat-on", base === "sat");
     b.querySelector(".tip").textContent = base === "sat" ? "Map view" : "Satellite view";
     setBase();
     drawVector();
@@ -526,6 +528,28 @@
   function introWhere() {
     return state.scannedQR ? `📍 You're at ${startInfo().name}` : "";
   }
+
+  // Landing page "Places you'll need": nearest to the main gate first.
+  function renderLandingPlaces() {
+    const list = $("#l-places-list");
+    if (!list) return;
+    const gate = (CHECKPOINTS.find((c) => c.id === "main-gate") || CHECKPOINTS[0]).at;
+    const rows = PLACES.filter((p) => p.cat !== "gate")
+      .map((p) => ({ p, d: CampusRouter.dist(gate, p.at) }))
+      .sort((a, b) => a.d - b.d).slice(0, 12);
+    $("#l-places-n").textContent = rows.length;
+    list.innerHTML = rows.map(({ p, d }, i) => {
+      const c = CATEGORIES[p.cat] || CATEGORIES.other;
+      return `<li class="reveal" style="--rd:${Math.min(i, 8) * 50}ms"><button data-place="${esc(p.id)}">
+        <span class="n">${String(i + 1).padStart(2, "0")}</span>
+        <span class="nm">${esc(p.name)}${p.si ? `<small>${esc(p.si)}</small>` : ""}</span>
+        <span class="ct" style="--c:${c.color}">${esc(c.label)}</span>
+        <span class="ds">${Math.round(d / 10) * 10} m</span>
+        <span class="ar" aria-hidden="true">→</span></button></li>`;
+    }).join("");
+  }
+  renderLandingPlaces();
+  addEventListener("landing:go", (e) => { if (byId[e.detail]) select(e.detail); });
 
   const toParam = params.get("to");
   if (byId[toParam]) select(toParam, params.get("room"));

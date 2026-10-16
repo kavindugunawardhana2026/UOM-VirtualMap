@@ -3,7 +3,7 @@
   "short_name": "Campus Map",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#eef4fc",
-  "theme_color": "#1e3a8a",
+  "background_color": "#040814",
+  "theme_color": "#040814",
   "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }

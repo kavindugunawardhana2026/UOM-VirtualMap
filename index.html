@@ -5,49 +5,166 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>UoM Campus Finder</title>
   <meta name="description" content="Find your way around University of Moratuwa — for IT Faculty Batch 26.">
-  <meta name="theme-color" content="#0c1e4a">
+  <meta name="theme-color" content="#040814">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <!-- Welcome screen (first visit in a session; reopen with the "26" button) -->
+  <!-- Landing page (first visit in a session; reopen with the "26" button).
+       It scrolls on its own; the map waits underneath. -->
   <div id="intro" class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
-    <img src="photos/faculty-hero.png" class="intro-bg" alt="" aria-hidden="true">
-    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-    <canvas aria-hidden="true"></canvas>
-    <button id="intro-skip" class="intro-skip">Skip ›</button>
-    <div class="intro-inner">
-      <svg class="intro-pin" viewBox="0 0 64 80" aria-hidden="true">
-        <defs>
-          <linearGradient id="pinG" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#3b82f6"/><stop offset="1" stop-color="#38bdf8"/>
-          </linearGradient>
-        </defs>
-        <path class="fill" d="M32 4C18 4 7 15 7 29c0 19 25 45 25 45s25-26 25-45C57 15 46 4 32 4z" fill="url(#pinG)"/>
-        <path class="stroke" d="M32 4C18 4 7 15 7 29c0 19 25 45 25 45s25-26 25-45C57 15 46 4 32 4z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
-        <circle class="dotc" cx="32" cy="29" r="9" fill="#fff"/>
-      </svg>
-      <div class="intro-badge">BATCH <b>26</b> · FIT</div>
-      <p class="intro-hello" aria-hidden="true"><span>ආයුබෝවන් 🙏</span><span>வணக்கம் 🙏</span><span>Welcome 👋</span></p>
-      <h1 class="intro-title" id="intro-title">
-        <span class="line"><span>University of</span></span>
-        <span class="line"><span class="grad">Moratuwa</span></span>
-      </h1>
-      <p class="intro-sub">Your campus, in your pocket — find any place in seconds.</p>
-      <div class="intro-where"></div>
-      <ul class="intro-feats">
-        <li>🔍 Find any place</li>
-        <li>🧭 Step-by-step routes</li>
-        <li>🔭 360° walk-through</li>
-      </ul>
-      <button id="intro-go" class="cta">Start exploring <span class="arr">→</span></button>
-    </div>
+    <canvas class="stars" aria-hidden="true"></canvas>
+    <div class="l-progress" aria-hidden="true"><span></span></div>
+
+    <header class="intro-nav">
+      <span class="logo"><i>FIT</i>·UoM<small>/26</small></span>
+      <nav class="l-links" aria-label="Sections">
+        <a href="#l-about">About</a><a href="#l-story">Faculty</a><a href="#l-programmes">Degrees</a><a href="#l-places">Places</a>
+      </nav>
+      <button id="intro-skip" class="sq-btn">Open map <span aria-hidden="true">›</span></button>
+    </header>
+
+    <!-- 00 · Hero: the faculty building -->
+    <section class="l-hero">
+      <div class="l-hero-photo" aria-hidden="true">
+        <img src="photos/faculty-hero.jpg" srcset="photos/faculty-hero-sm.jpg 900w, photos/faculty-hero.jpg 1672w" sizes="100vw" alt="" fetchpriority="high">
+      </div>
+      <div class="intro-inner">
+        <p class="intro-kicker">Batch 26 · University of Moratuwa</p>
+        <p class="intro-hello" aria-hidden="true"><span>ආයුබෝවන් 🙏</span><span>வணக்கம் 🙏</span><span>Welcome 👋</span></p>
+        <h1 class="intro-title" id="intro-title">
+          <span class="line" data-scramble>Faculty of</span>
+          <span class="line" data-scramble>Information Technology</span>
+        </h1>
+        <p class="intro-sub">Your new home starts here. Find any lecture hall, canteen or office in seconds.</p>
+        <div class="intro-where"></div>
+        <ul class="intro-feats">
+          <li>find any place</li>
+          <li>step-by-step routes</li>
+          <li>360° walk-through</li>
+        </ul>
+        <button id="intro-go" class="cta">Start exploring <span class="arr">→</span></button>
+      </div>
+      <a class="l-cue" href="#l-about"><span>Scroll down</span><i aria-hidden="true"></i></a>
+      <footer class="intro-foot" aria-hidden="true">
+        <span>Katubedda, Moratuwa</span>
+        <span>06°47′ N · 79°54′ E</span>
+      </footer>
+    </section>
+
+    <!-- 01 · About -->
+    <section class="l-about" id="l-about">
+      <div class="l-about-text reveal">
+        <p class="l-kicker">01 — About the faculty</p>
+        <p class="l-lead"><b>FIT</b> is one of the faculties of the University of Moratuwa, and the first faculty of its kind in Sri Lanka's national university system.</p>
+        <p class="l-body">It was established in June 2001 to meet the country's growing need for IT professionals. Today it runs three internal honours degrees, an external degree, and postgraduate programmes from MSc to PhD.</p>
+        <blockquote class="l-quote" data-scramble>“Built in 2001 for a country learning to code.”</blockquote>
+        <button class="btn-line" data-place="it-faculty">See it on the map <span aria-hidden="true">→</span></button>
+      </div>
+      <figure class="l-about-card reveal">
+        <img src="photos/faculty-hero-sm.jpg" alt="The Faculty of Information Technology building" loading="lazy">
+        <figcaption>FIT · Katubedda</figcaption>
+      </figure>
+    </section>
+
+    <!-- 02 · Numbered story with a sticky morphing orb -->
+    <section class="l-story" id="l-story">
+      <div class="l-orb-wrap" aria-hidden="true"><div class="l-orb"><span></span></div></div>
+      <div class="l-steps">
+        <article class="l-step reveal" data-step="1">
+          <p class="l-kicker">01 — Origin</p>
+          <h2 data-scramble>Since 2001</h2>
+          <p>Founded in June 2001 as the first IT faculty in a Sri Lankan state university, built to train the people the country's tech industry was waiting for.</p>
+        </article>
+        <article class="l-step reveal" data-step="2">
+          <p class="l-kicker">02 — Departments</p>
+          <h2 data-scramble>Three Departments</h2>
+          <ul class="l-tags"><li>Information Technology</li><li>Computational Mathematics</li><li>Interdisciplinary Studies</li></ul>
+          <p>Code, maths and the human side of technology, taught under one roof.</p>
+        </article>
+        <article class="l-step reveal" data-step="3">
+          <p class="l-kicker">03 — Degrees</p>
+          <h2 data-scramble>Three Honours Degrees</h2>
+          <p>BSc Hons in Information Technology, in IT &amp; Management, and in Artificial Intelligence, plus the external Bachelor of Information Technology.</p>
+        </article>
+        <article class="l-step reveal" data-step="4">
+          <p class="l-kicker">04 — Research</p>
+          <h2 data-scramble>Beyond the Degree</h2>
+          <p>MSc in IT, MSc in AI, MPhil and PhD programmes since 2004, with the Information Technology Research Unit (ITRU) behind them.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 03 · Programme cards -->
+    <section class="l-programmes" id="l-programmes">
+      <p class="l-label reveal">Programmes</p>
+      <div class="l-cards">
+        <article class="l-card photo reveal" style="--pos: 18% 50%">
+          <div class="l-card-tags"><span>internal</span><span>honours</span></div>
+          <h3 data-scramble>BSc Hons IT</h3>
+          <p>Software, systems and networks. The faculty's founding degree.</p>
+        </article>
+        <article class="l-card reveal">
+          <div class="l-card-tags"><span>internal</span><span>honours</span></div>
+          <h3 data-scramble>BSc Hons IT &amp; M</h3>
+          <p>Technology and management side by side, for people who build and run things.</p>
+        </article>
+        <article class="l-card photo reveal" style="--pos: 82% 40%">
+          <div class="l-card-tags"><span>internal</span><span>honours</span></div>
+          <h3 data-scramble>BSc Hons AI</h3>
+          <p>Machine learning, data and intelligent systems.</p>
+        </article>
+        <article class="l-card dark reveal">
+          <div class="l-card-tags"><span>external</span></div>
+          <h3 data-scramble>Bachelor of IT</h3>
+          <p>The external degree programme, open beyond the campus.</p>
+        </article>
+        <article class="l-card dark reveal">
+          <div class="l-card-tags"><span>postgraduate</span></div>
+          <h3 data-scramble>MSc · MPhil · PhD</h3>
+          <p>MSc in IT, MSc in AI and research degrees, running since 2004.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 04 · Places list (filled in by app.js) -->
+    <section class="l-places" id="l-places">
+      <div class="l-places-head reveal">
+        <p class="l-count">(<b id="l-places-n">0</b>)</p>
+        <h2>Places you'll need</h2>
+        <p>Distance from the main gate. Tap one to open it on the map.</p>
+      </div>
+      <ol class="l-rows" id="l-places-list"></ol>
+    </section>
+
+    <!-- 05 · Numbers -->
+    <section class="l-numbers">
+      <p class="l-label reveal">By the numbers</p>
+      <div class="l-stats">
+        <div class="reveal"><b data-count="2001">2001</b><span>Founded</span></div>
+        <div class="reveal"><b data-count="3">3</b><span>Departments</span></div>
+        <div class="reveal"><b data-count="3">3</b><span>Honours degrees</span></div>
+        <div class="reveal"><b data-count="26">26</b><span>Your batch</span></div>
+      </div>
+    </section>
+
+    <!-- 06 · Final call -->
+    <section class="l-final">
+      <h2 class="reveal" data-scramble>Different schools,<br>the same campus to find.</h2>
+      <p class="reveal">We drew the map.<br>You make it yours.</p>
+      <button class="cta big reveal" data-enter>Open the campus map <span class="arr">→</span></button>
+      <footer class="l-foot">
+        <a href="print.html">Printable map</a>
+        <a href="qr.html">QR codes</a>
+        <a href="https://uom.lk/itfac" target="_blank" rel="noopener">uom.lk/itfac</a>
+      </footer>
+    </section>
   </div>
 
   <script>
@@ -69,9 +186,16 @@
   </header>
 
   <div class="map-buttons">
-    <button id="btn-gps" class="fab" aria-label="Show my location">◎<span class="tip">My location</span></button>
-    <button id="btn-layers" class="fab" aria-label="Switch map style">🛰️<span class="tip">Satellite view</span></button>
-    <button id="btn-tour" class="fab" aria-label="Open 360° tour">🔭<span class="tip">360° tour</span></button>
+    <button id="btn-gps" class="fab" aria-label="Show my location">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5" class="dot"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      <span class="tip">My location</span></button>
+    <button id="btn-layers" class="fab" aria-label="Switch map style">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="i-sat"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="i-map"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+      <span class="tip">Satellite view</span></button>
+    <button id="btn-tour" class="fab" aria-label="Open 360° tour">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="12" rx="9" ry="9"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><path d="M12 3v18"/></svg>
+      <span class="tip">360° tour</span></button>
   </div>
 
   <section id="sheet" class="sheet" aria-live="polite">

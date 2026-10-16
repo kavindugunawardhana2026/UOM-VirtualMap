@@ -49,14 +49,14 @@ window.EXTRA_PATHS = [
 ];
 
 window.CATEGORIES = {
-  faculty:  { label: "Faculties & lecture", icon: "🎓", color: "#2563eb" },
-  services: { label: "Offices & services",  icon: "🏛️", color: "#2563eb" },
-  food:     { label: "Food",                icon: "🍛", color: "#ea580c" },
-  health:   { label: "Medical",             icon: "🏥", color: "#dc2626" },
-  sports:   { label: "Sports & open areas", icon: "⚽", color: "#16a34a" },
-  hostel:   { label: "Hostels",             icon: "🛏️", color: "#0d9488" },
-  other:    { label: "Other departments",   icon: "🏢", color: "#64748b" },
-  gate:     { label: "Gates",               icon: "🚪", color: "#0f172a" },
+  faculty:  { label: "Faculties & lecture", icon: "🎓", color: "#4f8cff" },
+  services: { label: "Offices & services",  icon: "🏛️", color: "#8ab4ff" },
+  food:     { label: "Food",                icon: "🍛", color: "#ffa36b" },
+  health:   { label: "Medical",             icon: "🏥", color: "#ff7aa8" },
+  sports:   { label: "Sports & open areas", icon: "⚽", color: "#84e36b" },
+  hostel:   { label: "Hostels",             icon: "🛏️", color: "#4fd1e8" },
+  other:    { label: "Other departments",   icon: "🏢", color: "#8a9bb8" },
+  gate:     { label: "Gates",               icon: "🚪", color: "#c2d3f0" },
 };
 
 // QR checkpoints. Print one QR per checkpoint (qr.html) and stick it at
