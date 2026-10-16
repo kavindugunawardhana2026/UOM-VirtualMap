@@ -1,19 +1,26 @@
 /* =====================================================================
    UoM Campus Finder — Deep Space
    Fonts: Outfit (UI) · Kode Mono (Display + Mono)
-   Palette: deep navy + electric blue, always dark
+   Palette: deep navy + electric blue (dark), cool paper + blue (light).
+   The theme is set on <html data-theme> by a script in index.html.
    ===================================================================== */
-:root {
-  /* --- Blue scale --- */
-  --g1: #1f5fe0; --g2: #4f8cff; --g3: #9cc0ff;
-  --grad: linear-gradient(135deg, var(--g1) 0%, var(--g2) 55%, var(--g3) 100%);
-  --blue-card: linear-gradient(160deg, #3f7cf0 0%, #2a5fd8 55%, #1d47b5 100%);
 
+/* Dark theme (default). Also re-applied to parts that always sit on dark
+   imagery (the landing hero, its top bar before you scroll, the 360° tour)
+   so they stay legible in the light theme. */
+:root,
+:root[data-theme="light"] .l-hero,
+:root[data-theme="light"] .intro:not(.scrolled) .intro-nav,
+:root[data-theme="light"] .tour {
   /* --- Surfaces --- */
   --bg: #040814;
   --panel: rgba(6, 11, 28, .78);
   --panel-solid: #0a1226;
   --panel-2: rgba(150, 185, 255, .04);
+  --glass: rgba(6, 11, 28, .5);
+  --nav-bg: rgba(4, 8, 20, .72);
+  --card-a: #0f1a38;
+  --card-b: #070d1e;
   --text: #eef4ff;
   --text-secondary: #a9bde6;
   --muted: #6f82ab;
@@ -22,9 +29,13 @@
   --accent: #4f8cff;
   --accent-ink: #050b1f;
   --accent-soft: rgba(79, 140, 255, .10);
+  --quote: #7fb0ff;
+  --stat-grad: linear-gradient(180deg, #eef4ff 0%, #7fb0ff 60%, #2a5fd8 100%);
   --route: #5aa0ff;
   --route-casing: #050b1f;
   --you: #5eead4;
+  --ok: #5ee6a8;
+  --warn: #ffcf8a;
 
   /* --- Elevation --- */
   --shadow-sm: 0 1px 3px rgba(0,0,0,.3);
@@ -39,6 +50,59 @@
   --road: #172342;
   --road-casing: #070d1e;
   --label-halo: #050a16;
+  --vignette: rgba(4, 8, 20, .55);
+  /* OSM tiles turned into a night map with a blue cast. */
+  --tile-filter: invert(1) hue-rotate(185deg) saturate(.6) brightness(.6) contrast(1.05);
+  color-scheme: dark;
+}
+
+/* Light theme */
+:root[data-theme="light"] {
+  --bg: #f3f6fc;
+  --panel: rgba(255, 255, 255, .84);
+  --panel-solid: #ffffff;
+  --panel-2: rgba(31, 95, 224, .04);
+  --glass: rgba(255, 255, 255, .7);
+  --nav-bg: rgba(243, 246, 252, .82);
+  --card-a: #ffffff;
+  --card-b: #eaf0fb;
+  --text: #0b1530;
+  --text-secondary: #3a4a6b;
+  --muted: #6b7a99;
+  --line: rgba(20, 50, 120, .12);
+  --line-strong: rgba(31, 95, 224, .38);
+  --accent: #1f5fe0;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(31, 95, 224, .08);
+  --quote: #1f5fe0;
+  --stat-grad: linear-gradient(180deg, #0b1530 0%, #1f5fe0 65%, #4f8cff 100%);
+  --route: #1f5fe0;
+  --route-casing: #ffffff;
+  --you: #0d9488;
+  --ok: #0f8a5f;
+  --warn: #9a5a00;
+
+  --shadow-sm: 0 1px 3px rgba(15,35,90,.08);
+  --shadow: 0 8px 28px -10px rgba(15,35,90,.22), 0 0 0 1px rgba(20,50,120,.04);
+  --shadow-lg: 0 18px 48px -14px rgba(15,35,90,.3), 0 0 32px -14px rgba(31,95,224,.3);
+
+  --map-bg: #e8eef8;
+  --bldg: #d3dff2;
+  --bldg-line: #9db5dc;
+  --bldg-shadow: rgba(15,35,90,.16);
+  --road: #ffffff;
+  --road-casing: #c5d3e8;
+  --label-halo: #eef3fa;
+  --vignette: rgba(220, 230, 246, .45);
+  --tile-filter: saturate(.55) hue-rotate(8deg) brightness(1.05) contrast(.92);
+  color-scheme: light;
+}
+
+:root {
+  /* --- Blue scale (same in both themes) --- */
+  --g1: #1f5fe0; --g2: #4f8cff; --g3: #9cc0ff;
+  --grad: linear-gradient(135deg, var(--g1) 0%, var(--g2) 55%, var(--g3) 100%);
+  --blue-card: linear-gradient(160deg, #3f7cf0 0%, #2a5fd8 55%, #1d47b5 100%);
 
   /* --- Metrics --- */
   --radius: 12px;
@@ -51,9 +115,12 @@
   --font-display: "Kode Mono", "Noto Sans Sinhala", ui-monospace, monospace;
   --font-mono: "Kode Mono", ui-monospace, "Cascadia Code", monospace;
   font-family: var(--font-ui);
-  color-scheme: dark;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+/* Short cross-fade while switching themes (class added by FX.toggleTheme). */
+.theme-anim, .theme-anim *, .theme-anim *::before, .theme-anim *::after {
+  transition: background-color .45s ease, color .45s ease, border-color .45s ease, fill .45s ease, stroke .45s ease !important;
 }
 
 /* ---- Reset ---- */
@@ -75,13 +142,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .leaflet-control-zoom { border: 1px solid var(--line) !important; box-shadow: var(--shadow) !important; border-radius: 10px !important; overflow: hidden; }
 .leaflet-control-zoom a { background: var(--panel) !important; color: var(--text) !important; backdrop-filter: blur(12px); border-color: var(--line) !important; font-family: var(--font-mono); }
 .leaflet-control-zoom a:hover { background: var(--panel-solid) !important; color: var(--accent) !important; }
-/* OSM tiles turned into a night map with a violet cast. */
-.base-tiles { filter: invert(1) hue-rotate(185deg) saturate(.6) brightness(.6) contrast(1.05); }
+.base-tiles { filter: var(--tile-filter); }
 .bldg-shadow { pointer-events: none; }
 /* Faint vignette so the map edges melt into space. */
 #map::after {
   content: ""; position: absolute; inset: 0; z-index: 450; pointer-events: none;
-  background: radial-gradient(120% 90% at 60% 45%, transparent 55%, rgba(4,8,20,.55) 100%);
+  background: radial-gradient(120% 90% at 60% 45%, transparent 55%, var(--vignette) 100%);
 }
 
 /* ============================================================ TOP BAR */
@@ -265,7 +331,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 12px 14px; color: var(--text); font-family: var(--font-ui);
   background:
     radial-gradient(120% 140% at 100% 0%, rgba(79,140,255,.22), transparent 55%),
-    linear-gradient(135deg, #0e1834 0%, #070d1e 100%);
+    linear-gradient(135deg, var(--card-a) 0%, var(--card-b) 100%);
   border-color: rgba(79,140,255,.25);
 }
 .tile.wide .ti {
@@ -332,7 +398,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   position: relative; overflow: hidden; border-radius: var(--radius-lg); padding: 16px; margin: 4px 0 12px; color: var(--text);
   background:
     radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--c) 34%, transparent), transparent 60%),
-    linear-gradient(160deg, #0f1a38 0%, #070d1e 100%);
+    linear-gradient(160deg, var(--card-a) 0%, var(--card-b) 100%);
   border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
   box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--c) 70%, transparent);
   display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
@@ -372,7 +438,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .photos figure:nth-child(2) { animation-delay: .06s; } .photos figure:nth-child(3) { animation-delay: .12s; }
 .photos img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; background: var(--accent-soft); transition: transform 6s ease-out; }
 .photos figure:hover img { transform: scale(1.06); }
-.photos figcaption { position: absolute; left: 8px; bottom: 8px; font: 500 10.5px var(--font-mono); letter-spacing: .03em; background: rgba(4,8,20,.7); border: 1px solid var(--line); backdrop-filter: blur(8px); color: var(--text); padding: 3px 8px; border-radius: 6px; z-index: 500; }
+.photos figcaption { position: absolute; left: 8px; bottom: 8px; font: 500 10.5px var(--font-mono); letter-spacing: .03em; background: rgba(4,8,20,.7); border: 1px solid var(--line); backdrop-filter: blur(8px); color: #eef4ff; padding: 3px 8px; border-radius: 6px; z-index: 500; }
 .photos .aerial { width: 100%; aspect-ratio: 16/10; overflow: hidden; background: var(--map-bg); }
 .photos .aerial .leaflet-control-attribution { font-size: 9px; }
 .tour-thumb button {
@@ -389,7 +455,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 1px dashed rgba(150,185,255,.5); animation: spin 14s linear infinite;
 }
 .tour-thumb .big360 { font: 700 32px/1 var(--font-display); position: relative; text-shadow: 0 0 20px rgba(79,140,255,.8); }
-.tour-thumb span:last-child { position: relative; color: var(--text-secondary); }
+.tour-thumb span:last-child { position: relative; color: #a9bde6; }
 
 /* ---- Route steps ---- */
 .route-sum { display: none; }
@@ -406,16 +472,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .steps li:last-child .arrow { background: var(--accent); border: 0; color: var(--accent-ink); box-shadow: 0 0 18px -4px rgba(79,140,255,.9); }
 .steps li small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
-.verified { font: 500 11.5px var(--font-mono); color: #5ee6a8; margin: 6px 0; display: flex; align-items: center; gap: 4px; }
+.verified { font: 500 11.5px var(--font-mono); color: var(--ok); margin: 6px 0; display: flex; align-items: center; gap: 4px; }
 .unverified { font-size: 12px; color: var(--muted); margin: 6px 2px; line-height: 1.5; }
 .unverified b { color: var(--text-secondary); }
-.warn { font-size: 12.5px; color: #ffcf8a; background: rgba(255,163,107,.08); border: 1px solid rgba(255,163,107,.25); padding: 8px 10px; border-radius: 8px; margin: 8px 0; }
+.warn { font-size: 12.5px; color: var(--warn); background: rgba(255,163,107,.08); border: 1px solid rgba(255,163,107,.25); padding: 8px 10px; border-radius: 8px; margin: 8px 0; }
 
 /* ---- Action buttons: outlined, uppercase, arrow-style ---- */
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 16px; }
 .btn {
   position: relative; overflow: hidden; text-align: center; text-decoration: none; border-radius: 8px; padding: 10px 12px;
-  border: 1px solid var(--line-strong); background: rgba(6,11,28,.4); color: var(--text);
+  border: 1px solid var(--line-strong); background: var(--glass); color: var(--text);
   font: 500 11.5px var(--font-mono); letter-spacing: .04em; text-transform: uppercase;
   transition: transform .2s var(--ease-spring), box-shadow .2s, background .2s, border-color .2s, color .2s;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -488,6 +554,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.3), 0 0 12px 4px var(--g2), 0 0 28px 10px rgba(79,140,255,.45);
 }
 .route-glow { stroke: var(--g2); filter: blur(4px); }
+/* Stroke colours follow the theme without redrawing the route. */
+.route-main { stroke: var(--route); }
+.route-casing { stroke: var(--route-casing); }
 .route-flow { stroke-dasharray: 1 16; animation: flow 1s linear infinite; }
 @keyframes flow { to { stroke-dashoffset: -17; } }
 .route-main.drawing { transition: stroke-dashoffset 1.2s var(--ease-out); }
@@ -527,6 +596,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .intro[hidden] { display: none; }
 .intro.out { opacity: 0; transform: scale(1.06); filter: blur(8px); pointer-events: none; }
 .intro .stars { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+/* On paper the white stars turn into faint ink dots. */
+:root[data-theme="light"] .intro .stars { filter: invert(1) hue-rotate(180deg); opacity: .35; }
+.l-hero, .intro-nav { color: var(--text); }
 .fx-canvas { position: fixed; inset: 0; z-index: 6000; pointer-events: none; }
 
 /* --- Scroll progress + top bar --- */
@@ -538,21 +610,29 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transition: background .3s, border-color .3s, backdrop-filter .3s;
   animation: dropIn .7s var(--ease-out) .3s both;
 }
-.intro.scrolled .intro-nav { background: rgba(4,8,20,.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: var(--line); }
+.intro.scrolled .intro-nav { background: var(--nav-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-color: var(--line); }
 .logo { font: 600 20px/1 var(--font-display); letter-spacing: -.02em; white-space: nowrap; }
 .logo i { font-style: normal; color: var(--accent); }
 .logo small { font-size: 12px; color: var(--muted); margin-left: 4px; font-weight: 500; }
 .l-links { display: none; margin-left: auto; gap: 22px; }
 .l-links a { color: var(--text-secondary); text-decoration: none; font: 500 11.5px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; transition: color .2s; }
 .l-links a:hover { color: var(--accent); }
-.intro-nav .sq-btn { margin-left: auto; }
-@media (min-width: 820px) { .l-links { display: flex; } .intro-nav .sq-btn { margin-left: 8px; } .intro-nav { padding-left: 24px; padding-right: 24px; } }
+.intro-nav .theme-btn { margin-left: auto; }
+@media (min-width: 820px) { .l-links { display: flex; } .intro-nav .theme-btn { margin-left: 8px; } .intro-nav { padding-left: 24px; padding-right: 24px; } }
 .sq-btn, .btn-line {
-  border: 1px solid var(--line-strong); background: rgba(6,11,28,.5); color: var(--text); backdrop-filter: blur(8px);
+  border: 1px solid var(--line-strong); background: var(--glass); color: var(--text); backdrop-filter: blur(8px);
   padding: 8px 12px; border-radius: 8px; font: 500 11.5px var(--font-mono); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap;
   transition: background .2s, border-color .2s, color .2s, transform .25s var(--ease-spring);
 }
 .sq-btn:hover, .btn-line:hover { border-color: var(--accent); color: var(--accent); }
+.sq-btn.sq-icon { padding: 0; width: 34px; height: 33px; display: grid; place-items: center; }
+.sq-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Sun shows in dark mode (tap for light), moon in light mode. */
+.theme-btn .i-moon, :root[data-theme="light"] .theme-btn .i-sun { display: none; }
+:root[data-theme="light"] .theme-btn .i-moon { display: block; }
+.theme-btn svg { transition: transform .5s var(--ease-spring); }
+.theme-btn:hover svg { transform: rotate(-25deg); }
 .btn-line { display: inline-flex; align-items: center; gap: 12px; padding: 11px 16px; }
 .btn-line span { transition: transform .3s var(--ease-spring); }
 .btn-line:hover span { transform: translateX(4px); }
@@ -601,7 +681,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   position: relative; overflow: hidden; color: var(--text); border-radius: 8px; padding: 12px 18px;
   display: inline-flex; align-items: center; gap: 14px;
   font: 600 13px var(--font-mono); letter-spacing: .06em; text-transform: uppercase;
-  background: rgba(6,11,28,.55); border: 1px solid var(--line-strong); backdrop-filter: blur(8px);
+  background: var(--glass); border: 1px solid var(--line-strong); backdrop-filter: blur(8px);
   box-shadow: 0 0 30px -10px rgba(79,140,255,.8);
   transition: transform .3s var(--ease-spring), background .25s, color .25s, border-color .25s;
 }
@@ -645,7 +725,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .l-body { margin: 0; font-size: 16px; line-height: 1.7; color: var(--text-secondary); font-weight: 300; max-width: 52ch; }
 .l-quote {
   margin: 44px 0 36px; font: 600 clamp(28px, 3.6vw, 48px)/1.15 var(--font-display); letter-spacing: -.02em;
-  color: #7fb0ff; text-shadow: 0 0 40px rgba(79,140,255,.35);
+  color: var(--quote); text-shadow: 0 0 40px rgba(79,140,255,.35);
 }
 .l-about-card {
   position: relative; margin: 0; border-radius: 18px; overflow: hidden; aspect-ratio: 4 / 5; border: 1px solid var(--line);
@@ -661,7 +741,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* --- 02 · Story with a sticky orb that changes shape per step --- */
 .l-story { display: grid; }
-.l-orb-wrap { position: sticky; top: 64px; z-index: 2; height: 200px; display: grid; place-items: center; background: linear-gradient(rgba(4,8,20,.94) 72%, transparent); margin: 0 calc(-1 * max(16px, 6vw)); }
+.l-orb-wrap { position: sticky; top: 64px; z-index: 2; height: 200px; display: grid; place-items: center; background: linear-gradient(color-mix(in srgb, var(--bg) 94%, transparent) 72%, transparent); margin: 0 calc(-1 * max(16px, 6vw)); }
 .l-steps { position: relative; z-index: 1; }
 .l-step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px dashed var(--line); padding: 40px 0; }
 .l-step:last-child { border-bottom: 0; }
@@ -719,8 +799,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .l-card h3 { margin: 0; font: 700 clamp(28px, 3vw, 40px)/1.05 var(--font-display); letter-spacing: -.02em; }
 .l-card p { margin: 0; font-size: 15px; line-height: 1.5; max-width: 32ch; opacity: .85; }
 .l-card-tags { display: flex; gap: 5px; justify-content: flex-end; }
-.l-card-tags span { font: 500 10.5px var(--font-mono); padding: 4px 8px; border-radius: 6px; background: rgba(5,11,31,.82); color: var(--text); }
-.l-card.photo { color: var(--text); background: #0a1226; }
+.l-card-tags span { font: 500 10.5px var(--font-mono); padding: 4px 8px; border-radius: 6px; background: rgba(5,11,31,.82); color: #eef4ff; }
+.l-card.photo { color: #eef4ff; background: #0a1226; }
 .l-card.photo::before {
   content: ""; position: absolute; inset: 0; z-index: -2; background: url("../photos/faculty-hero-sm.jpg") var(--pos, center) / cover no-repeat;
   filter: saturate(.8) brightness(.75); transition: transform 1.2s var(--ease-out);
@@ -731,7 +811,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .l-card.photo:hover::before { transform: scale(1.06); }
 .l-card.photo h3 { text-shadow: 0 2px 20px rgba(4,8,20,.8); }
-.l-card.dark { color: var(--text); background: radial-gradient(120% 90% at 100% 0%, rgba(79,140,255,.28), transparent 55%), linear-gradient(160deg, #0f1a38, #070d1e); border: 1px solid var(--line); }
+.l-card.dark { color: var(--text); background: radial-gradient(120% 90% at 100% 0%, rgba(79,140,255,.28), transparent 55%), linear-gradient(160deg, var(--card-a), var(--card-b)); border: 1px solid var(--line); }
 @media (min-width: 900px) {
   .l-cards { display: grid; grid-template-columns: repeat(6, 1fr); overflow: visible; margin: 0; padding: 0; gap: 16px; }
   .l-card { grid-column: span 2; min-height: 360px; }
@@ -767,7 +847,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .l-stats > div { background: var(--bg); padding: 34px 16px; text-align: center; display: grid; gap: 8px; }
 .l-stats b {
   font: 700 clamp(44px, 7vw, 96px)/1 var(--font-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums;
-  background: linear-gradient(180deg, #eef4ff 0%, #7fb0ff 60%, #2a5fd8 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  background: var(--stat-grad); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .l-stats span { font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 @media (min-width: 820px) { .l-stats { grid-template-columns: repeat(4, 1fr); } }

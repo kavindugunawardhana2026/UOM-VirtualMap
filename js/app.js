@@ -23,7 +23,6 @@
 
   // ------------------------------------------------------------------ map
   const isDesktop = () => matchMedia("(min-width: 820px)").matches;
-  const darkQuery = matchMedia("(prefers-color-scheme: dark)");
   const map = L.map("map", { zoomControl: false, maxZoom: 20, minZoom: 15, attributionControl: true, zoomSnap: 0.25 });
   if (isDesktop()) L.control.zoom({ position: "bottomright" }).addTo(map);
 
@@ -41,7 +40,7 @@
     (base === "sat" ? sat : osm).addTo(map);
   }
   setBase();
-  darkQuery.addEventListener?.("change", () => drawVector());
+  addEventListener("themechange", () => drawVector());
 
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const campusBounds = L.latLngBounds(CAMPUS_DATA.campus);
@@ -173,7 +172,7 @@
     if (!r) return;
     const route = css("--route");
     L.polyline(r.path, { color: route, weight: 18, opacity: 0.18, interactive: false, lineCap: "round", lineJoin: "round", className: "route-glow" }).addTo(routeLayer);
-    L.polyline(r.path, { color: css("--route-casing"), weight: 10, opacity: 0.95, interactive: false, lineCap: "round", lineJoin: "round" }).addTo(routeLayer);
+    L.polyline(r.path, { color: css("--route-casing"), weight: 10, opacity: 0.95, interactive: false, lineCap: "round", lineJoin: "round", className: "route-casing" }).addTo(routeLayer);
     const main = L.polyline(r.path, { color: route, weight: 6, opacity: 1, interactive: false, lineCap: "round", lineJoin: "round", className: "route-main" }).addTo(routeLayer);
     L.polyline(r.path, { color: "#fff", weight: 3, opacity: 0.9, interactive: false, lineCap: "round", className: "route-flow" }).addTo(routeLayer);
     L.marker(from, { interactive: false, zIndexOffset: 1500, icon: L.divIcon({ className: "", iconSize: [22, 22], html: '<div class="start-marker"></div>' }) }).addTo(routeLayer);

@@ -50,6 +50,31 @@
     })(t0);
   }
 
+  // ------------------------------------------------------------- theme
+  // "light" or "dark" on <html data-theme> (first set by the script in
+  // index.html). A saved choice wins; with none, follow the phone's setting.
+  // Any [data-theme-toggle] button flips it. Fires "themechange" on window.
+  const lightQuery = matchMedia("(prefers-color-scheme: light)");
+  const savedTheme = () => { try { return localStorage.getItem("theme"); } catch (_) { return null; } };
+  const theme = () => document.documentElement.dataset.theme === "light" ? "light" : "dark";
+  let fadeTimer = 0;
+  function setTheme(t, { save = false, animate = true } = {}) {
+    const root = document.documentElement;
+    if (save) try { localStorage.setItem("theme", t); } catch (_) {}
+    if (animate && !reduced) {
+      root.classList.add("theme-anim");
+      clearTimeout(fadeTimer); fadeTimer = setTimeout(() => root.classList.remove("theme-anim"), 600);
+    }
+    root.dataset.theme = t;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "light" ? "#f3f6fc" : "#040814");
+    document.querySelectorAll("[data-theme-toggle]").forEach((b) => b.setAttribute("aria-pressed", String(t === "light")));
+    dispatchEvent(new CustomEvent("themechange", { detail: t }));
+  }
+  const toggleTheme = () => setTheme(theme() === "light" ? "dark" : "light", { save: true });
+  lightQuery.addEventListener?.("change", (e) => { if (!savedTheme()) setTheme(e.matches ? "light" : "dark"); });
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-theme-toggle]")) toggleTheme(); });
+  setTheme(theme(), { animate: false });
+
   // ------------------------------------------------------ count-up numbers
   function countUp(root = document) {
     root.querySelectorAll("[data-count]").forEach((el) => {
@@ -297,5 +322,5 @@
     });
   }
 
-  window.FX = { toast, confetti, countUp, typePlaceholder, intro, scramble, reduced };
+  window.FX = { toast, confetti, countUp, typePlaceholder, intro, scramble, theme, setTheme, toggleTheme, reduced };
 })();

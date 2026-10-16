@@ -14,7 +14,8 @@ A scrolling landing page opens first (once per visit — tap the **26** button t
 photo as the hero, then sections about the faculty, its departments and degrees, a "places you'll need" list
 that opens the map at that place, and a final "Open the campus map" button. Headings decode from scrambled
 letters as they scroll in, the hero photo drifts in parallax, and a glossy orb changes shape for each numbered
-step. The map itself uses a dark navy + electric-blue theme, with pins that drop in and a route line that draws
+step. There is a dark (navy + electric blue) and a light theme: it follows the phone until someone taps
+the sun/moon button (on the map and in the landing page top bar), then remembers their choice. Pins drop in and the route line draws
 itself with a glowing "comet" walking it. Everything calms down for people who turn animations off on their
 phone (reduced motion). Effects live in `js/fx.js`, styles in `css/app.css`, landing text in `index.html`.
 
