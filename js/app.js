@@ -274,7 +274,7 @@
   function render() {
     if (aerialMap) { aerialMap.remove(); aerialMap = null; }
     const place = byId[state.selected];
-    if (place) renderPlace(place); else { clearRoute(); renderHome(); }
+    if (place) renderPlace(place); else { clearRoute(); renderHome(); dispatchEvent(new CustomEvent("campus:place", { detail: { id: null } })); }
     const sel = $("#start-sel");
     if (sel) sel.onchange = (e) => {
       const v = e.target.value;
@@ -357,6 +357,7 @@
     const r = startsHere ? null : CampusRouter.route(s.at, target, { landmarks, destName: shortName(p), startName: s.cp ? s.cp.name : s.place ? shortName(s.place) : null });
     drawRoute(r, s.at, target);
     if (r) fitRoute(r.path); else map.flyTo(p.at, 19, { duration: 0.9 });
+    dispatchEvent(new CustomEvent("campus:place", { detail: { id: p.id, path: r ? r.path : null, to: target } })); // 3D map
 
     const room = state.room && (p.rooms || []).find((x) => x.code === state.room);
     const verified = state.start.kind !== "gps" && p.steps && p.steps[state.start.id];
@@ -463,6 +464,7 @@
   function setCat(k) {
     state.cat = state.cat === k ? null : k;
     chips.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.k === state.cat)));
+    dispatchEvent(new CustomEvent("campus:filter", { detail: { cat: state.cat } }));
     if (state.selected) select(null); else render();
     sheet.classList.remove("collapsed");
   }
@@ -549,6 +551,9 @@
   }
   renderLandingPlaces();
   addEventListener("landing:go", (e) => { if (byId[e.detail]) select(e.detail); });
+  // Taps on the 3D map (js/map3d.js).
+  addEventListener("map3d:select", (e) => { if (byId[e.detail]) select(e.detail); });
+  addEventListener("map3d:click", () => { if (!isDesktop()) sheet.classList.add("collapsed"); });
 
   const toParam = params.get("to");
   if (byId[toParam]) select(toParam, params.get("room"));

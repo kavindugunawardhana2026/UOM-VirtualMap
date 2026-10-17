@@ -948,3 +948,68 @@ iframe.tour-pano { border: 0; width: 100%; height: 100%; }
   .l-about-card { clip-path: none; }
   .intro { scroll-behavior: auto; }
 }
+
+/* ===================================================== 3D MAP (js/map3d.js) */
+#map3d { position: fixed; inset: 0; display: none; background: #f1f5f9; }
+body.mode-3d #map3d { display: block; }
+body.mode-3d #map { visibility: hidden; }
+body.mode-3d #btn-gps, body.mode-3d #btn-layers { display: none; }
+.fab.active { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.fab.busy svg { animation: spin 1s linear infinite; }
+
+.m3d-bar {
+  position: fixed; z-index: 1000; left: 12px; top: calc(env(safe-area-inset-top) + 126px);
+  display: none; gap: 6px; padding: 5px; border-radius: 14px;
+  background: rgba(255, 255, 255, .62); border: 1px solid rgba(255, 255, 255, .8);
+  backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow: 0 8px 28px -10px rgba(15, 35, 90, .3);
+}
+body.mode-3d .m3d-bar { display: flex; }
+.m3d-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, .08); background: rgba(255, 255, 255, .75); color: #0f172a;
+  font: 600 13px var(--font-sans, inherit); white-space: nowrap; cursor: pointer; transition: transform .2s, background .2s;
+}
+.m3d-btn:hover { background: #fff; }
+.m3d-btn:active { transform: scale(.94); }
+.m3d-btn.icon { padding: 0 10px; }
+.m3d-btn.icon i { font-style: normal; display: inline-block; transition: transform .1s linear; }
+.m3d-btn .st { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.m3d-btn[data-state="searching"] .st { background: #f59e0b; animation: ping 1.2s ease-out infinite alternate; }
+.m3d-btn[data-state="live"] { background: #dbeafe; border-color: #93c5fd; }
+.m3d-btn[data-state="live"] .st { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+@media (min-width: 820px) { .m3d-bar { top: auto; left: 452px; bottom: 16px; } }
+@media (max-width: 819px) { #map3d .maplibregl-ctrl-bottom-right { bottom: calc(env(safe-area-inset-bottom) + 122px); } }
+
+/* Floating building labels: the inner button is lifted to the roof by JS. */
+.m3d-anchor { width: 0; height: 0; }
+.m3d-label {
+  position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  padding: 3px 9px 3px 4px; border-radius: 999px; border: 1px solid rgba(15, 23, 42, .08);
+  background: rgba(255, 255, 255, .9); color: #0f172a; font: 600 11.5px var(--font-sans, inherit);
+  box-shadow: 0 4px 14px -6px rgba(15, 23, 42, .35); cursor: pointer; transition: opacity .25s;
+}
+.m3d-label .i { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; background: color-mix(in srgb, var(--c) 22%, #fff); }
+.m3d-label::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 2px; height: 5px; margin-left: -1px; background: rgba(15, 23, 42, .25); }
+.m3d-far .m3d-label .t { display: none; }
+.m3d-far .m3d-label { padding: 3px; }
+.m3d-anchor.sel { z-index: 5; }
+.m3d-anchor.sel .m3d-label { background: var(--c); color: #fff; padding: 4px 11px 4px 5px; }
+.m3d-far .m3d-anchor.sel .m3d-label .t { display: inline; }
+.m3d-anchor.dim .m3d-label { opacity: .3; }
+.m3d-hide-labels .m3d-anchor { display: none; }
+
+/* Live GPS marker + accuracy circle (flat on the ground). */
+.user-gps-marker { width: 22px; height: 22px; position: relative; }
+.user-gps-marker .core {
+  position: absolute; inset: 2px; border-radius: 50%; background: #3b82f6; border: 3px solid #fff;
+  box-shadow: 0 0 0 0 rgba(59, 130, 246, .55), 0 2px 6px rgba(15, 23, 42, .35); animation: gpsPulse 2s ease-out infinite;
+}
+.user-gps-marker .hdg {
+  display: none; position: absolute; left: 50%; bottom: 50%; width: 0; height: 0; margin-left: -11px;
+  border-left: 11px solid transparent; border-right: 11px solid transparent; border-bottom: 26px solid rgba(59, 130, 246, .35);
+}
+.user-gps-marker.has-heading .hdg { display: block; }
+@keyframes gpsPulse { 70% { box-shadow: 0 0 0 16px rgba(59, 130, 246, 0), 0 2px 6px rgba(15, 23, 42, .35); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0), 0 2px 6px rgba(15, 23, 42, .35); } }
+.user-gps-accuracy { border-radius: 50%; background: rgba(59, 130, 246, .12); border: 1.5px solid rgba(59, 130, 246, .45); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .user-gps-marker .core, .m3d-btn .st { animation: none; } }

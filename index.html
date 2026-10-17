@@ -186,6 +186,13 @@
   </script>
 
   <div id="map" aria-label="Campus map"></div>
+  <!-- 3D architectural map (js/map3d.js), shown over the 2D map when the cube button is on. -->
+  <div id="map3d" aria-label="3D campus map"></div>
+  <div id="m3d-bar" class="m3d-bar" role="toolbar" aria-label="3D map controls">
+    <button id="m3d-track" class="m3d-btn" data-state="off" aria-pressed="false"><span class="st" aria-hidden="true"></span>📍 <span class="lbl">Live Track</span></button>
+    <button id="m3d-pitch" class="m3d-btn" aria-label="Switch to flat 2D view">🏢 <span class="lbl">2D</span></button>
+    <button id="m3d-reset" class="m3d-btn icon" aria-label="Reset north and re-centre on campus" title="Reset north · re-centre"><i aria-hidden="true">🧭</i></button>
+  </div>
 
   <header class="top">
     <div class="search">
@@ -202,6 +209,9 @@
     <button id="btn-gps" class="fab" aria-label="Show my location">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5" class="dot"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
       <span class="tip">My location</span></button>
+    <button id="btn-3d" class="fab" aria-label="Switch to the 3D map" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.5 8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5z"/><path d="M12 12v9.5M12 12l8.5-4.75M12 12 3.5 7.25"/></svg>
+      <span class="tip">3D map</span></button>
     <button id="btn-layers" class="fab" aria-label="Switch map style">
       <svg viewBox="0 0 24 24" aria-hidden="true" class="i-sat"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>
       <svg viewBox="0 0 24 24" aria-hidden="true" class="i-map"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
@@ -228,6 +238,7 @@
   <script src="js/router.js"></script>
   <script src="js/tour.js"></script>
   <script src="js/tour-viewer.js"></script>
+  <script src="js/map3d.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

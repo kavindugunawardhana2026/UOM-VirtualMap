@@ -1,8 +1,8 @@
 // Offline support: app files are cached on first visit, map tiles as you browse.
-const APP = "campus-app-v7";
+const APP = "campus-app-v8";
 const TILES = "campus-tiles-v1";
 const APP_FILES = [
-  "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/tour.js", "js/tour-viewer.js", "js/fx.js", "icon.svg",
+  "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/tour.js", "js/tour-viewer.js", "js/fx.js", "js/map3d.js", "icon.svg",
   "manifest.webmanifest",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
@@ -22,6 +22,14 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;
   const isTile = /tile\.openstreetmap\.org|arcgisonline\.com/.test(url.hostname);
+  if (url.hostname === "tiles.openfreemap.org") {
+    // 3D map: its style and tile versions change weekly, so network-first with the cache as fallback.
+    e.respondWith(caches.open(TILES).then((c) => fetch(e.request).then((res) => {
+      if (res.ok) c.put(e.request, res.clone());
+      return res;
+    }).catch(() => c.match(e.request))));
+    return;
+  }
   if (isTile) {
     // Cache-first for tiles the user has already seen.
     e.respondWith(caches.open(TILES).then(async (c) => {
@@ -35,7 +43,7 @@ self.addEventListener("fetch", (e) => {
   }
   // Network-first for app files and photos so edits show up, cache as fallback.
   e.respondWith(fetch(e.request).then((res) => {
-    if (res.ok && (url.origin === location.origin || url.hostname === "cdnjs.cloudflare.com")) {
+    if (res.ok && (url.origin === location.origin || url.hostname === "cdnjs.cloudflare.com" || url.hostname === "cdn.jsdelivr.net")) {
       const copy = res.clone();
       caches.open(APP).then((c) => c.put(e.request, copy));
     }
