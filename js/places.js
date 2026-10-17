@@ -63,9 +63,11 @@ window.CATEGORIES = {
 // that exact spot. Scanning it opens the map with routes starting there.
 window.CHECKPOINTS = [
   { id: "main-gate", name: "Main Gate (Katubedda)", si: "ප්‍රධාන ගේට්ටුව",
-    at: [6.794955, 79.900744], note: "Main entrance from the Katubedda junction road" },
-  { id: "side-gate", name: "Secondary Entrance", si: "දෙවන ගේට්ටුව",
-    at: [6.795323, 79.899839], note: "Entrance near the Arthur C. Clarke Institute" },
+    at: [6.794955, 79.900744], isGate: true, note: "Main entrance from the Katubedda junction road" },
+  { id: "side-gate", name: "Side Gate", si: "පැති ගේට්ටුව",
+    at: [6.795323, 79.899839], isGate: true, note: "Side entrance near the Arthur C. Clarke Institute" },
+  { id: "back-gate", name: "Back Gate (North)", si: "පසුපස ගේට්ටුව",
+    at: [6.798215, 79.903337], isGate: true, note: "Northern entrance near Civil Engineering" },
   { id: "goda-junction", name: "Goda Canteen Junction", si: "ගොඩ කැන්ටිම හන්දිය",
     at: [6.796529, 79.900862], note: "Main Street meets Sumanadasa Front Road" },
   { id: "it-front", name: "In front of the IT Faculty", si: "IT පීඨය ඉදිරිපිට",

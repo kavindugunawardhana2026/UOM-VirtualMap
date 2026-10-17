@@ -51,7 +51,14 @@
     return best;
   }
 
+  // -------------------------------------------------- Dijkstra (original)
   function dijkstra(extra, src, dst, n) {
+    return dijkstraP(extra, src, dst, n, null);
+  }
+
+  // Dijkstra with optional edge-weight penalties (for alternative routing).
+  // `penalties` is a Map of "minId:maxId" -> multiplier (≥ 1).
+  function dijkstraP(extra, src, dst, n, penalties) {
     const d = new Float64Array(n).fill(Infinity), prev = new Int32Array(n).fill(-1), done = new Uint8Array(n);
     d[src] = 0;
     const nbrs = (u) => (u < adj.length ? adj[u] : []).concat(extra.get(u) || []);
@@ -78,7 +85,14 @@
       if (done[u]) continue;
       if (u === dst) break;
       done[u] = 1;
-      for (const [v, w] of nbrs(u)) if (d[u] + w < d[v]) { d[v] = d[u] + w; prev[v] = u; push([d[v], v]); }
+      for (const [v, w] of nbrs(u)) {
+        let weight = w;
+        if (penalties && penalties.size > 0) {
+          const ka = u < v ? u + ":" + v : v + ":" + u;
+          weight *= (penalties.get(ka) || 1);
+        }
+        if (d[u] + weight < d[v]) { d[v] = d[u] + weight; prev[v] = u; push([d[v], v]); }
+      }
     }
     if (d[dst] === Infinity) return null;
     const out = [];
@@ -88,6 +102,11 @@
 
   // Returns { path: [[lat,lng]...], metres, steps: [{icon,text,sub}] }
   function route(from, to, opts = {}) {
+    return routeP(from, to, opts, null);
+  }
+
+  // Internal: route with optional penalty map.
+  function routeP(from, to, opts, penalties) {
     const s = snap(from), e = snap(to);
     if (!s || !e) return null;
     const S = nodes.length, E = nodes.length + 1;
@@ -105,7 +124,7 @@
     // Both ends on the same road segment: walk straight along it.
     if ((s.a === e.a && s.b === e.b) || (s.a === e.b && s.b === e.a)) add(S, E, dist(s.at, e.at));
 
-    const ids = dijkstra(extra, S, E, nodes.length + 2);
+    const ids = dijkstraP(extra, S, E, nodes.length + 2, penalties);
     if (!ids) return null;
     let path = ids.map(pts);
     if (s.d > 3) path.unshift(from);
@@ -114,7 +133,7 @@
 
     let metres = 0;
     for (let i = 1; i < path.length; i++) metres += dist(path[i - 1], path[i]);
-    return { path, metres, steps: describe(path, to, opts) };
+    return { path, metres, steps: describe(path, to, opts), _ids: ids };
   }
 
   const CARDINAL = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
@@ -193,5 +212,72 @@
     return best;
   }
 
-  window.CampusRouter = { route, dist, snap, bearing, along, distToPath };
+  // ------------------------------------------------ Point-in-polygon test
+  // Ray-casting algorithm: true if `p` is inside the campus boundary.
+  function isInsideCampus(p) {
+    const poly = window.CAMPUS_DATA.campus;
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [yi, xi] = poly[i], [yj, xj] = poly[j];
+      if (((yi > p[0]) !== (yj > p[0])) &&
+          (p[1] < (xj - xi) * (p[0] - yi) / (yj - yi) + xi))
+        inside = !inside;
+    }
+    return inside;
+  }
+
+  // ------------------------------------------- Alternative routing
+  // Measure how much of path1 overlaps with path2 (0 – 1).
+  function pathOverlap(p1, p2) {
+    let overlap = 0, total = 0;
+    for (let i = 1; i < p1.length; i++) {
+      const seg = dist(p1[i - 1], p1[i]);
+      total += seg;
+      const mid = [(p1[i - 1][0] + p1[i][0]) / 2, (p1[i - 1][1] + p1[i][1]) / 2];
+      if (distToPath(mid, p2) < 12) overlap += seg;
+    }
+    return total > 0 ? overlap / total : 1;
+  }
+
+  // Find up to `k` distinct alternative routes between two points.
+  // Uses iterative penalty-based approach: after finding a shortest path,
+  // penalise its edges so the next Dijkstra avoids them, producing a
+  // genuinely different route.
+  const ALT_COLORS = ["#5aa0ff", "#ff7aa8", "#84e36b"];
+  const ALT_LABELS = ["Fastest route", "Alternative 1", "Alternative 2"];
+
+  function routeAlternatives(from, to, opts = {}, k = 3) {
+    const results = [];
+    const penalties = new Map();
+
+    for (let attempt = 0; attempt < k + 5 && results.length < k; attempt++) {
+      const r = routeP(from, to, opts, penalties.size > 0 ? penalties : null);
+      if (!r) break;
+
+      // Only keep routes that are ≥30 % different from every route we already have.
+      const tooSimilar = results.some(prev => pathOverlap(prev.path, r.path) > 0.70);
+      if (!tooSimilar || results.length === 0) {
+        const idx = results.length;
+        r.label = ALT_LABELS[idx] || `Alternative ${idx}`;
+        r.routeColor = ALT_COLORS[idx] || ALT_COLORS[0];
+        r.routeIndex = idx;
+        results.push(r);
+      }
+
+      // Penalise edges used in this route so the next iteration avoids them.
+      if (r._ids) {
+        for (let i = 1; i < r._ids.length; i++) {
+          const a = r._ids[i - 1], b = r._ids[i];
+          const key = a < b ? a + ":" + b : b + ":" + a;
+          penalties.set(key, (penalties.get(key) || 1) * 3);
+        }
+      }
+    }
+
+    // Clean internal graph IDs from the output.
+    for (const r of results) delete r._ids;
+    return results;
+  }
+
+  window.CampusRouter = { route, routeAlternatives, dist, snap, bearing, along, distToPath, isInsideCampus };
 })();
