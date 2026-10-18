@@ -186,9 +186,15 @@
   </script>
 
   <div id="map" aria-label="Campus map"></div>
-  <!-- 3D architectural map (js/map3d.js), shown over the 2D map when the cube button is on. -->
-  <div id="map3d" aria-label="3D campus map"></div>
+  <!-- 3D map, shown over the 2D map when the cube button is on (js/map3d-modes.js), in two styles:
+       Real = Google Photorealistic 3D Tiles (js/map3d.js), Minimal = white & green model (js/map3d-minimal.js). -->
+  <div id="map3d" class="map3d" aria-label="Real 3D campus map"></div>
+  <div id="map3d-min" class="map3d" aria-label="Minimal 3D campus map"></div>
   <div id="m3d-bar" class="m3d-bar" role="toolbar" aria-label="3D map controls">
+    <div id="m3d-style" class="m3d-seg" role="group" aria-label="3D map style">
+      <button data-style="real" aria-pressed="false">🛰️ Real</button>
+      <button data-style="minimal" aria-pressed="false">⬜ Minimal</button>
+    </div>
     <button id="m3d-track" class="m3d-btn" data-state="off" aria-pressed="false"><span class="st" aria-hidden="true"></span>📍 <span class="lbl">Live Track</span></button>
     <button id="m3d-pitch" class="m3d-btn" aria-label="Switch to flat 2D view">🏢 <span class="lbl">2D</span></button>
     <button id="m3d-reset" class="m3d-btn icon" aria-label="Reset north and re-centre on campus" title="Reset north · re-centre"><i aria-hidden="true">🧭</i></button>
@@ -239,6 +245,8 @@
   <script src="js/tour.js"></script>
   <script src="js/tour-viewer.js"></script>
   <script src="js/map3d.js"></script>
+  <script src="js/map3d-minimal.js"></script>
+  <script src="js/map3d-modes.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

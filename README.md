@@ -79,6 +79,27 @@ spots inside campus** (e.g. Goda Canteen junction) — those show "no imagery". 
 your own 360 photos (`pano/`), or upload them to Google Maps with a 360 camera so they appear in
 Real view too.
 
+## 3D map — Real and Minimal styles
+
+The cube button opens the 3D map. The **Real | Minimal** toggle in its toolbar switches style
+(the choice is remembered, and 📍 **Live Track** keeps running when you switch):
+- **🛰️ Real** — Google's photorealistic 3D mesh of the campus, drawn with
+  [CesiumJS](https://cesium.com/platform/cesiumjs/) (`js/map3d.js`). The selected building is tinted in its
+  category colour, the route is draped over the mesh, and your GPS dot sits on top.
+- **⬜ Minimal** — a clean white & green model from OpenStreetMap (`js/map3d-minimal.js`, no key needed).
+  Campus buildings are drawn 50% taller than real so they stand out from the town around them —
+  change `CAMPUS_HEIGHT_BOOST` in that file (e.g. `1.3` = +30%, `2` = double).
+
+The Real style needs a Google key with the **Map Tiles API**:
+1. In https://console.cloud.google.com/ enable **Map Tiles API** on your project (billing account required;
+   Google counts one request per 3D session, with a monthly free allowance).
+2. Credentials → **Create API key** → restrict it: *Websites* = your site (and `http://localhost:8765/*`
+   for testing); *API restriction* = Map Tiles API (add Maps Embed API too if you use the same key for the tour).
+3. Paste it into `js/map3d.js` → `GOOGLE_MAPS_API_KEY`.
+
+Without a key (or if Google refuses it) only the Minimal style is offered. Google's logo and credits
+must stay visible on the map.
+
 ## Images
 
 Each place card shows, in order: your photos (`photos/<id>.jpg`, `photos/<id>-entrance.jpg`) if

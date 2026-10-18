@@ -1,8 +1,8 @@
 // Offline support: app files are cached on first visit, map tiles as you browse.
-const APP = "campus-app-v8";
+const APP = "campus-app-v10";
 const TILES = "campus-tiles-v1";
 const APP_FILES = [
-  "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/tour.js", "js/tour-viewer.js", "js/fx.js", "js/map3d.js", "icon.svg",
+  "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/tour.js", "js/tour-viewer.js", "js/fx.js", "js/map3d.js", "js/map3d-minimal.js", "js/map3d-modes.js", "icon.svg",
   "manifest.webmanifest",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
@@ -22,8 +22,10 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;
   const isTile = /tile\.openstreetmap\.org|arcgisonline\.com/.test(url.hostname);
+  // Google 3D tiles (Real 3D style) are never cached here: Google's terms only allow the browser's own cache.
+  if (url.hostname === "tile.googleapis.com") return;
   if (url.hostname === "tiles.openfreemap.org") {
-    // 3D map: its style and tile versions change weekly, so network-first with the cache as fallback.
+    // Minimal 3D style: its style and tile versions change weekly, so network-first with the cache as fallback.
     e.respondWith(caches.open(TILES).then((c) => fetch(e.request).then((res) => {
       if (res.ok) c.put(e.request, res.clone());
       return res;
