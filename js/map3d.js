@@ -2,7 +2,7 @@
 //
 // MapLibre GL draws OpenFreeMap vector tiles (no API key) restyled white & green,
 // with every building extruded to its OpenStreetMap height and the campus places
-// from places.js re-drawn with their own multi-storey heights and floating labels.
+// from places.js re-drawn taller (CAMPUS_HEIGHT_BOOST) so they stand out, with floating labels.
 // It is loaded on demand from the cube button; the Leaflet map in app.js stays
 // underneath as the 2D / satellite / offline view.
 //
@@ -43,6 +43,10 @@
   };
   const HEIGHT_M = { gym: 11, "buddha-statue": 6, lagaan: 1.2, "civil-car-park": 0.3 };
   const heightOf = (p) => HEIGHT_M[p.id] ?? Math.round(((p.floors ?? FLOORS[p.id] ?? 2) * FLOOR_M + ROOF_M) * 10) / 10;
+  // Campus buildings are drawn this much taller than real (1.5 = +50%), so they stand
+  // out from the town around them and are easy to pick out at a glance.
+  const CAMPUS_HEIGHT_BOOST = 1.5;
+  const drawnHeight = (p) => Math.round(heightOf(p) * CAMPUS_HEIGHT_BOOST * 10) / 10;
   const shortName = (p) => p.name.replace(/^Dept\. of /, "").replace(/ \(.*\)$/, "");
   const ll = ([lat, lng]) => [lng, lat];
 
@@ -57,7 +61,7 @@
       if (a[0] !== b[0] || a[1] !== b[1]) coords.push(a);
       features.push({
         type: "Feature", id: features.length + 1,
-        properties: { place: p.id, osm: +p.osm, height: heightOf(p), color: (CATEGORIES[p.cat] || CATEGORIES.other).color },
+        properties: { place: p.id, osm: +p.osm, height: drawnHeight(p), color: (CATEGORIES[p.cat] || CATEGORIES.other).color },
         geometry: { type: "Polygon", coordinates: [coords] },
       });
     }
@@ -270,7 +274,7 @@
       const inner = el.firstChild;
       inner.onclick = (e) => { e.stopPropagation(); dispatchEvent(new CustomEvent("map3d:select", { detail: p.id })); };
       const marker = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat(ll(p.at)).addTo(map);
-      labels.push({ p, el, inner, marker, h: fidOf[p.id] ? heightOf(p) + 1 : 0.5 });
+      labels.push({ p, el, inner, marker, h: fidOf[p.id] ? drawnHeight(p) + 1 : 0.5 });
     }
     map.on("move", liftLabels);
     map.on("zoom", syncLabelZoom);
