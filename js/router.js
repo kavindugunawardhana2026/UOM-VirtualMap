@@ -23,8 +23,36 @@
   }
   function link(a, b, w) { adj[a].push([b, w]); adj[b].push([a, w]); }
 
-  for (const road of window.CAMPUS_DATA.roads.concat(window.EXTRA_PATHS || [])) {
+  // Segments nobody may walk through (window.NO_WALK, e.g. the vehicle-only Main Gate).
+  const pairKey = (p, q) => [p, q].map((x) => x[0].toFixed(6) + "," + x[1].toFixed(6)).sort().join("|");
+  const noWalk = new Set((window.NO_WALK || []).map(([p, q]) => pairKey(p, q)));
+
+  // Extra paths (places.js) join the road they end on: when an end lies within a
+  // few metres of a road segment, that segment is split there so the two connect.
+  const extras = (window.EXTRA_PATHS || []).map((r) => r.slice());
+  const roads = window.CAMPUS_DATA.roads.map((r) => r.slice()).concat(extras);
+  const same = (p, q) => p[0].toFixed(6) === q[0].toFixed(6) && p[1].toFixed(6) === q[1].toFixed(6);
+  for (const path of extras) {
+    const others = roads.filter((r) => r !== path);
+    for (const end of [path[0], path[path.length - 1]]) {
+      if (others.some((r) => r.some((p) => same(p, end)))) continue; // already on a road point
+      const E = xy(end);
+      let best = null;
+      for (const r of others) {
+        for (let i = 1; i < r.length; i++) {
+          const A = xy(r[i - 1]), B = xy(r[i]), dx = B[0] - A[0], dy = B[1] - A[1], len2 = dx * dx + dy * dy;
+          const t = len2 ? Math.max(0, Math.min(1, ((E[0] - A[0]) * dx + (E[1] - A[1]) * dy) / len2)) : 0;
+          const d = Math.hypot(A[0] + t * dx - E[0], A[1] + t * dy - E[1]);
+          if (t > 0 && t < 1 && (!best || d < best.d)) best = { r, i, d };
+        }
+      }
+      if (best && best.d <= 3) best.r.splice(best.i, 0, end);
+    }
+  }
+
+  for (const road of roads) {
     for (let i = 1; i < road.length; i++) {
+      if (noWalk.has(pairKey(road[i - 1], road[i]))) continue;
       const a = nodeId(road[i - 1]), b = nodeId(road[i]);
       if (a === b) continue;
       link(a, b, dist(nodes[a], nodes[b]));

@@ -516,11 +516,11 @@
     return state.scannedQR ? `📍 You're at ${startInfo().name}` : "";
   }
 
-  // Landing page "Places you'll need": nearest to the main gate first.
+  // Landing page "Places you'll need": nearest to the side gate (the walking entrance) first.
   function renderLandingPlaces() {
     const list = $("#l-places-list");
     if (!list) return;
-    const gate = (CHECKPOINTS.find((c) => c.id === "main-gate") || CHECKPOINTS[0]).at;
+    const gate = (CHECKPOINTS.find((c) => c.id === "side-gate") || CHECKPOINTS[0]).at;
     const rows = PLACES.filter((p) => p.cat !== "gate")
       .map((p) => ({ p, d: CampusRouter.dist(gate, p.at) }))
       .sort((a, b) => a.d - b.d).slice(0, 12);

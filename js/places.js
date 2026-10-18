@@ -33,17 +33,22 @@ window.EVENT = {
 };
 
 // Footpaths that are missing from OpenStreetMap. Routes can use
-// these. Each one is a list of [lat, lng] points; it must start/end
-// exactly on an existing road point or close to one. Walk them to confirm.
+// these. Each one is a list of [lat, lng] points; each end must be on an
+// existing road (a road point, or within 3 m of a road — it's joined there).
+// Walk them to confirm.
 // Example: [[6.798751, 79.90202], [6.798990, 79.901860], [6.799223, 79.901704]],
 // TODO: routes to Nugasewana currently go round by the outside road because
 // OSM has no path from campus to it — add the real footpath (and set the
 // hostel's `entrance`) after checking on site.
 window.EXTRA_PATHS = [
   // Back Gate (north), on Mill Road next to the Juice Shop: the short path from the
-  // campus road through the gate, joined into Mill Road both ways.
+  // campus road through the gate out to Mill Road.
   [[6.798511, 79.901123], [6.79859, 79.901123]],
-  [[6.798583, 79.900991], [6.79859, 79.901123], [6.79861, 79.9014]],
+  // Side Gate walkways (marked on site): from just inside the gate, east past the
+  // Administration Building to the Main Street by the Library, and north past Earth
+  // Resources Engineering to the Goda Canteen road.
+  [[6.795552, 79.899921], [6.79554, 79.900084], [6.795514, 79.900321], [6.795503, 79.900601], [6.79549, 79.900816]],
+  [[6.795552, 79.899921], [6.795732, 79.899966], [6.795966, 79.899999], [6.796286, 79.90001], [6.796607, 79.900049]],
 ];
 
 window.CATEGORIES = {
@@ -57,13 +62,21 @@ window.CATEGORIES = {
   gate:     { label: "Gates",               icon: "🚪", color: "#c2d3f0" },
 };
 
+// Road segments people can't walk through. Routes never use them.
+// The Main Gate is for vehicles only — students walk in through the Side Gate
+// (or the Back Gate when it's closer).
+window.NO_WALK = [
+  [[6.795036, 79.900797], [6.794955, 79.900744]], // through the Main Gate
+];
+
 // QR checkpoints. Print one QR per checkpoint (qr.html) and stick it at
 // that exact spot. Scanning it opens the map with routes starting there.
+// The first one is where routes start by default.
 window.CHECKPOINTS = [
-  { id: "main-gate", name: "Main Gate (Katubedda)", si: "ප්‍රධාන ගේට්ටුව",
-    at: [6.794955, 79.900744], isGate: true, note: "Main entrance from the Katubedda junction road" },
   { id: "side-gate", name: "Side Gate", si: "පැති ගේට්ටුව",
-    at: [6.795323, 79.899839], isGate: true, note: "Side entrance near the Arthur C. Clarke Institute" },
+    at: [6.795323, 79.899839], isGate: true, note: "Walking entrance near the Arthur C. Clarke Institute" },
+  { id: "main-gate", name: "Main Gate (Katubedda)", si: "ප්‍රධාන ගේට්ටුව",
+    at: [6.794955, 79.900744], isGate: true, note: "Vehicles only — walk in through the Side Gate" },
   { id: "back-gate", name: "Back Gate (North)", si: "පසුපස ගේට්ටුව",
     at: [6.79859, 79.901123], isGate: true, note: "Northern entrance on Mill Road, next to the Juice Shop" },
   { id: "goda-junction", name: "Goda Canteen Junction", si: "ගොඩ කැන්ටිම හන්දිය",
