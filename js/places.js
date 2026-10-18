@@ -118,9 +118,11 @@ window.PLACES = [
 
   // ---- Food --------------------------------------------------------------
   { id: "goda-canteen", name: "Goda Canteen", si: "ගොඩ කැන්ටිම", aka: ["Canteen"],
-    cat: "food", osm: "220323119", at: [6.796399, 79.900171] },
+    cat: "food", osm: "220323119", at: [6.796399, 79.900171],
+    photos: [{ src: "photos/goda-canteen.jpg", caption: "Inside" }] },
   { id: "wala-canteen", name: "Wala Canteen", si: "වල කැන්ටිම", aka: ["Canteen"],
-    cat: "food", osm: "220298434", at: [6.796924, 79.899578] },
+    cat: "food", osm: "220298434", at: [6.796924, 79.899578],
+    photos: [{ src: "photos/wala-canteen.jpg", caption: "Inside" }] },
   { id: "food-court", name: "Food Court & Study Area", si: "ආහාර සහ අධ්‍යයන ප්‍රදේශය",
     aka: ["Canteen"], cat: "food", osm: "257709525", at: [6.796297, 79.900585] },
   { id: "juice-shop", name: "Juice Shop", si: "යුෂ කඩේ",
@@ -130,7 +132,8 @@ window.PLACES = [
   { id: "gym", name: "UoM Gymnasium", si: "ව්‍යායාම ශාලාව", aka: ["Gym"],
     cat: "sports", osm: "220298433", at: [6.797641, 79.900542] },
   { id: "playground", name: "University Playground", si: "ක්‍රීඩාංගණය", aka: ["Ground"],
-    cat: "sports", at: [6.798146, 79.899463] },
+    cat: "sports", at: [6.798146, 79.899463],
+    photos: [{ src: "photos/playground.jpg", caption: "Cricket on the ground" }] },
   { id: "lagaan", name: "Lagaan (open-air theatre)", si: "ලගාන්", aka: ["Open air theatre"],
     cat: "sports", osm: "395935732", at: [6.798003, 79.900704] },
 
@@ -156,7 +159,8 @@ window.PLACES = [
   { id: "ce-lab", name: "Civil Engineering Research Lab", cat: "other",
     osm: "395935833", at: [6.797976, 79.902657], floors: 4 },
   { id: "accimt", name: "Arthur C. Clarke Institute (ACCIMT)", aka: ["ACCIMT"],
-    cat: "other", at: [6.794924, 79.900189] },
+    cat: "other", at: [6.794924, 79.900189],
+    photos: [{ src: "photos/accimt.jpg", caption: "Lab extension" }] },
   { id: "civil-car-park", name: "Civil Car Park", si: "වාහන නැවැත්වීම", aka: ["Parking"],
     cat: "other", osm: "395935835", at: [6.79823, 79.902498] },
 ];
