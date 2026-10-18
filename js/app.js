@@ -214,22 +214,9 @@
     history.replaceState(null, "", `${location.pathname}?${u}`);
   }
 
-  // ------------------------------------------------------------ 360° tour
-  function startSpot() {
-    if (state.start.kind === "cp") return CampusTour.spots.find((x) => x.id === state.start.id) || CampusTour.nearestSpot(startInfo().at);
-    if (state.start.kind === "place") return CampusTour.spotForPlace(state.start.id);
-    return CampusTour.nearestSpot(startInfo().at);
-  }
-  function openTour(spotId, destId) {
-    CampusTour.open(spotId, { dest: destId });
-  }
-  const spotLayer = L.layerGroup();
-  for (const sp of CampusTour.spots) {
-    L.marker(sp.at, { icon: L.divIcon({ className: "", iconSize: [26, 26], html: '<div class="spot-dot">360</div>' }), title: `360° · ${sp.name}`, zIndexOffset: -200 })
-      .on("click", () => openTour(sp.id)).addTo(spotLayer);
-  }
-  const syncSpots = () => { if (map.getZoom() >= 18) spotLayer.addTo(map); else spotLayer.remove(); };
-  map.on("zoomend", syncSpots); syncSpots();
+  // ------------------------------------------------------------ 3D map
+  // Opens the 3D map (js/map3d.js); it flies to the open place and shows its route.
+  const open3D = () => window.Map3D && window.Map3D.enter();
 
   // --------------------------------------------------------------- search
   const norm = (s) => String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
@@ -319,9 +306,9 @@
       <div class="tiles">
         ${QUICK.map((q, i) => `<button class="tile" style="--i:${i};--tc:${q.color}" ${q.go ? `data-go="${q.go}"` : `data-cat="${q.cat}"`}>
           <span class="ti">${q.icon}</span>${esc(q.label)}</button>`).join("")}
-        <button class="tile wide" id="tour-home" style="--i:${QUICK.length}">
-          <span class="ti"><span>🔭</span></span>
-          <span><b>Explore campus in 360°</b><small>Walk the paths before you even arrive</small></span>
+        <button class="tile wide" id="explore-3d" style="--i:${QUICK.length}">
+          <span class="ti"><span>🏙️</span></span>
+          <span><b>Explore campus in 3D</b><small>See every building before you even arrive</small></span>
           <span class="go">→</span></button>
       </div>`;
     const items = results.map(({ place: p, room: r }, i) => {
@@ -344,8 +331,8 @@
     }));
     body.querySelectorAll("[data-cat]").forEach((b) => (b.onclick = () => setCat(b.dataset.cat)));
     FX.scramble(body);
-    const th = $("#tour-home");
-    if (th) th.onclick = () => openTour(startSpot().id);
+    const x3 = $("#explore-3d");
+    if (x3) x3.onclick = open3D;
   }
 
   function renderPlace(p) {
@@ -395,17 +382,17 @@
       ${stats ? `<div class="stats">${stats.map(([v, l], i) => `<div class="stat" style="--i:${i}"><b data-count="${v}">0</b><span>${l}</span></div>`).join("")}</div>` : ""}
       <div class="photos" id="photos">
         ${photos.map((ph) => `<figure><img src="${esc(ph.src)}" alt="${esc(p.name)} — ${esc(ph.caption)}"><figcaption>${esc(ph.caption)}</figcaption></figure>`).join("")}
-        <figure class="tour-thumb"><button id="tour-here" aria-label="Open 360° view of ${esc(p.name)}"><span class="big360">360°</span><span>Look around here</span></button><figcaption>360° view</figcaption></figure>
+        <figure class="view3d-thumb"><button id="view-3d" aria-label="See ${esc(p.name)} on the 3D map"><span class="big3d">3D</span><span>See it in 3D</span></button><figcaption>3D view</figcaption></figure>
         <figure><div id="aerial" class="aerial" role="img" aria-label="Satellite view of ${esc(p.name)}"></div><figcaption>Aerial view</figcaption></figure>
       </div>
       ${startRowHTML()}
       ${stepsHTML}
       ${(p.rooms || []).length && !room ? `<div class="section-title">Rooms in this building</div><ul class="list rooms">${p.rooms.map((x, i) => `<li style="--i:${i}"><button data-room="${esc(x.code)}"><span><div class="t">${esc(x.code)} · ${esc(x.name)}</div><div class="s">${esc(x.floor || "")}</div></span></button></li>`).join("")}</ul>` : ""}
       <div class="actions">
-        ${r ? `<button class="btn primary" id="tour-walk">🚶 Walk there in 360°</button>` : ""}
+        ${r ? `<button class="btn primary" id="route-3d">🏙️ Route in 3D</button>` : ""}
         ${startsHere ? "" : `<button class="btn" id="start-here">📍 Start from here</button>`}
         <button class="btn" id="share">🔗 Share</button>
-        <a class="btn" href="${CampusTour.streetViewURL(CampusTour.spotForPlace(p.id).at, 0)}" target="_blank" rel="noopener">🌐 Street View</a>
+        <a class="btn" href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${target[0]},${target[1]}" target="_blank" rel="noopener">🌐 Street View</a>
         <a class="btn" href="${gmaps}" target="_blank" rel="noopener">🗺️ Google Maps</a>
       </div>`;
 
@@ -414,7 +401,7 @@
     $("#back").onclick = clearSelection;
     $("#share").onclick = share;
     body.querySelectorAll("[data-room]").forEach((b) => (b.onclick = () => select(p.id, b.dataset.room)));
-    // Drop photos that haven't been taken yet; the 360° and aerial views always remain.
+    // Drop photos that haven't been taken yet; the 3D and aerial views always remain.
     $("#photos").querySelectorAll("img").forEach((img) => {
       const fail = () => img.closest("figure").remove();
       if (img.complete && !img.naturalWidth) fail(); else img.onerror = fail;
@@ -427,8 +414,8 @@
     else L.circleMarker(p.at, { radius: 10, color: "#facc15", weight: 3, fill: false }).addTo(aerialMap);
     L.control.attribution({ prefix: false }).addAttribution("Esri").addTo(aerialMap);
 
-    $("#tour-here").onclick = () => openTour(CampusTour.spotForPlace(p.id).id);
-    if ($("#tour-walk")) $("#tour-walk").onclick = () => openTour(startSpot().id, p.id);
+    $("#view-3d").onclick = open3D;
+    if ($("#route-3d")) $("#route-3d").onclick = open3D;
     if ($("#start-here")) $("#start-here").onclick = () => { setStart({ kind: "place", id: p.id }); clearSelection(); FX.toast(`Starting from ${shortName(p)} — now pick where to go`, "📍"); };
     body.scrollTop = 0;
   }
@@ -513,7 +500,6 @@
     setBase();
     drawVector();
   };
-  $("#btn-tour").onclick = () => openTour(startSpot().id, state.selected || undefined);
 
   // ------------------------------------------------- welcome + first view
   // A cinematic arrival: start wide, then glide onto the campus as pins drop in.

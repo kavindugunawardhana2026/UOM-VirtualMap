@@ -6,12 +6,11 @@
    ===================================================================== */
 
 /* Dark theme (default). Also re-applied to parts that always sit on dark
-   imagery (the landing hero, its top bar before you scroll, the 360° tour)
+   imagery (the landing hero and its top bar before you scroll)
    so they stay legible in the light theme. */
 :root,
 :root[data-theme="light"] .l-hero,
-:root[data-theme="light"] .intro:not(.scrolled) .intro-nav,
-:root[data-theme="light"] .tour {
+:root[data-theme="light"] .intro:not(.scrolled) .intro-nav {
   /* --- Surfaces --- */
   --bg: #040814;
   --panel: rgba(6, 11, 28, .78);
@@ -441,7 +440,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .photos figcaption { position: absolute; left: 8px; bottom: 8px; font: 500 10.5px var(--font-mono); letter-spacing: .03em; background: rgba(4,8,20,.7); border: 1px solid var(--line); backdrop-filter: blur(8px); color: #eef4ff; padding: 3px 8px; border-radius: 6px; z-index: 500; }
 .photos .aerial { width: 100%; aspect-ratio: 16/10; overflow: hidden; background: var(--map-bg); }
 .photos .aerial .leaflet-control-attribution { font-size: 9px; }
-.tour-thumb button {
+.view3d-thumb button {
   width: 100%; aspect-ratio: 16/10; border: 0; color: #fff; display: grid; place-content: center; gap: 4px; position: relative; overflow: hidden;
   background:
     radial-gradient(60% 60% at 50% 50%, rgba(79,140,255,.35), transparent 70%),
@@ -450,12 +449,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
     linear-gradient(180deg, #0a1226, #10204a);
   font: 500 11px var(--font-mono); letter-spacing: .04em; text-transform: uppercase;
 }
-.tour-thumb button::before {
+.view3d-thumb button::before {
   content: ""; position: absolute; width: 110px; height: 110px; left: 50%; top: 50%; margin: -55px 0 0 -55px; border-radius: 50%;
   border: 1px dashed rgba(150,185,255,.5); animation: spin 14s linear infinite;
 }
-.tour-thumb .big360 { font: 700 32px/1 var(--font-display); position: relative; text-shadow: 0 0 20px rgba(79,140,255,.8); }
-.tour-thumb span:last-child { position: relative; color: #a9bde6; }
+.view3d-thumb .big3d { font: 700 32px/1 var(--font-display); position: relative; text-shadow: 0 0 20px rgba(79,140,255,.8); }
+.view3d-thumb span:last-child { position: relative; color: #a9bde6; }
 
 /* ---- Route steps ---- */
 .route-sum { display: none; }
@@ -560,14 +559,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .route-flow { stroke-dasharray: 1 16; animation: flow 1s linear infinite; }
 @keyframes flow { to { stroke-dashoffset: -17; } }
 .route-main.drawing { transition: stroke-dashoffset 1.2s var(--ease-out); }
-
-.spot-dot {
-  width: 24px; height: 24px; border-radius: 50%; color: var(--accent-ink); border: 2px solid #eef4ff;
-  background: radial-gradient(circle at 35% 30%, #eaf2ff, #4f8cff 55%, #1f5fe0);
-  font: 700 7.5px/20px var(--font-mono); text-align: center; box-shadow: 0 0 12px -2px rgba(79,140,255,.9); cursor: pointer;
-  transition: transform .3s var(--ease-spring);
-}
-.spot-dot:hover { transform: scale(1.2); }
 
 /* ============================================================= TOAST */
 .toasts { position: fixed; left: 50%; top: calc(env(safe-area-inset-top) + 72px); transform: translateX(-50%); z-index: 4000; display: grid; gap: 6px; width: min(92vw, 400px); pointer-events: none; }
@@ -859,79 +850,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .l-foot { margin-top: 70px; display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
 .l-foot a { color: var(--muted); text-decoration: none; font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; border-bottom: 1px dashed var(--line); transition: color .2s, border-color .2s; }
 .l-foot a:hover { color: var(--accent); border-color: var(--accent); }
-
-/* ========================================================= 360° TOUR */
-.tour { position: fixed; inset: 0; z-index: 3000; background: #000; color: #fff; animation: tourIn .45s var(--ease-out); }
-@keyframes tourIn { from { opacity: 0; transform: scale(1.03); } }
-.tour[hidden] { display: none; }
-.tour-pano { position: absolute; inset: 0; }
-.tour-top {
-  position: absolute; top: 0; left: 0; right: 0; display: flex; gap: 10px; align-items: center;
-  padding: calc(env(safe-area-inset-top) + 12px) 12px 28px; background: linear-gradient(rgba(4,8,20,.8), transparent); pointer-events: none;
-}
-.tour-top > * { pointer-events: auto; }
-.tour-btn { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--line-strong); background: rgba(6,11,28,.55); backdrop-filter: blur(12px); color: #fff; font-size: 16px; flex: none; transition: transform .3s var(--ease-spring), background .2s, color .2s; }
-.tour-btn:hover { background: var(--accent); color: var(--accent-ink); transform: rotate(90deg); }
-.tour-title { display: grid; min-width: 0; }
-.tour-title b { font: 600 15px var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tour-title small { font-size: 11.5px; opacity: .7; font-family: var(--font-mono); }
-.tour-guide {
-  position: absolute; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom) + 12px); max-width: 480px;
-  background: rgba(6,11,28,.78); backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; font-size: 13px;
-  display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; align-items: center;
-  box-shadow: 0 16px 36px -12px rgba(0,0,0,.7); animation: riseIn .5s var(--ease-out) .1s both;
-}
-.tour-guide label { font: 500 11px var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
-.tour-guide select { font: inherit; border-radius: 8px; border: 1px solid var(--line-strong); padding: 7px 10px; min-width: 0; background: var(--panel-solid); color: var(--text); font-size: 13px; }
-.tour-hint { grid-column: 1 / -1; opacity: .85; font-size: 12.5px; color: var(--text-secondary); }
-.tour-mini {
-  position: absolute; right: 12px; bottom: calc(env(safe-area-inset-bottom) + 12px); width: 150px; height: 150px;
-  border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-strong); box-shadow: 0 8px 24px rgba(0,0,0,.5);
-  animation: popIn .5s var(--ease-spring) .2s both;
-}
-@media (max-width: 640px) {
-  .tour-mini { width: 104px; height: 104px; top: calc(env(safe-area-inset-top) + 64px); bottom: auto; border-radius: 10px; }
-}
-.cone { width: 60px; height: 60px; position: relative; transition: transform .1s linear; }
-.cone-in {
-  position: absolute; left: 50%; top: 0; width: 0; height: 0; transform: translateX(-50%);
-  border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 30px solid rgba(79,140,255,.45);
-}
-.tour-arrow { width: 0; height: 0; cursor: pointer; }
-.tour-arrow .ar {
-  position: absolute; left: -34px; top: -34px; width: 68px; height: 68px; display: grid; place-items: center;
-  font-size: 34px; color: #fff; border-radius: 50%; background: rgba(6,11,28,.45); border: 1.5px solid rgba(150,185,255,.6);
-  transform: perspective(160px) rotateX(50deg); text-shadow: 0 2px 6px rgba(0,0,0,.5); transition: background .2s, transform .3s var(--ease-spring);
-}
-.tour-arrow:hover .ar { background: rgba(79,140,255,.7); transform: perspective(160px) rotateX(50deg) scale(1.12); }
-.tour-arrow .lbl {
-  position: absolute; top: 38px; left: 50%; transform: translateX(-50%); white-space: nowrap;
-  background: rgba(6,11,28,.75); backdrop-filter: blur(6px); color: #fff; font: 500 11px var(--font-mono); padding: 4px 10px; border-radius: 6px;
-}
-.tour-arrow.next .ar { background: var(--accent); border-color: #fff; color: var(--accent-ink); animation: glow 1.6s ease-in-out infinite; }
-.tour-arrow.next .lbl { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
-@keyframes glow { 50% { box-shadow: 0 0 0 10px rgba(79,140,255,.22), 0 0 26px rgba(79,140,255,.5); } }
-.pulse { color: var(--accent); }
-body.tour-open .top, body.tour-open .sheet, body.tour-open .map-buttons { visibility: hidden; }
-.tour .pnlm-controls-container { top: calc(env(safe-area-inset-top) + 66px); left: 12px; }
-.tour .pnlm-compass { top: auto; right: auto; left: 12px; bottom: calc(env(safe-area-inset-bottom) + 130px); }
-.tour .pnlm-load-button, .tour .pnlm-about-msg { display: none !important; }
-iframe.tour-pano { border: 0; width: 100%; height: 100%; }
-.tour-pano[hidden] { display: none; }
-.tour-modes { margin-left: auto; display: flex; background: rgba(6,11,28,.55); border: 1px solid var(--line); backdrop-filter: blur(12px); border-radius: 8px; padding: 2px; flex: none; }
-.tour-mode { border: 0; background: transparent; color: #fff; font: 500 11px var(--font-mono); letter-spacing: .04em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; white-space: nowrap; transition: background .2s, color .2s; }
-.tour-mode.on { background: var(--accent); color: var(--accent-ink); }
-.tour-links { grid-column: 1 / -1; display: flex; gap: 5px; flex-wrap: wrap; }
-.tour-links button { border: 1px solid var(--line-strong); border-radius: 6px; padding: 6px 10px; font: 500 11.5px var(--font-ui); background: rgba(6,11,28,.5); color: #fff; transition: transform .2s var(--ease-spring), border-color .2s; }
-.tour-links button:hover { transform: translateY(-1px); border-color: var(--accent); }
-.tour-links button.next { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; animation: glow 1.6s ease-in-out infinite; }
-@media (max-width: 640px) {
-  .tour-top { flex-wrap: wrap; }
-  .tour-modes { margin-left: 52px; }
-  .tour-mini { top: calc(env(safe-area-inset-top) + 108px); }
-  .tour .pnlm-controls-container { top: calc(env(safe-area-inset-top) + 108px); }
-}
 
 @media (max-width: 480px) {
   .intro-foot span:last-child { display: none; }

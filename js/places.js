@@ -21,12 +21,6 @@
 //
 //  "osm" is the OpenStreetMap way id used to highlight the outline.
 
-// Google Street View ("Real view" in the 360° tour).
-// Paste a Google Maps *Embed API* key here to show Google's real Street View
-// imagery inside the app (the Embed API is free — see README). Without a key,
-// "Real view" opens the same spot in the Google Maps app / website instead.
-window.GOOGLE_MAPS_EMBED_KEY = "";
-
 window.EVENT = {
   title: "Welcome, Batch 26!",
   subtitle: "Faculty of Information Technology · University of Moratuwa",
@@ -38,8 +32,8 @@ window.EVENT = {
   venueNote: "", // e.g. "Ceremony starts 8.30 a.m. — please be seated by 8.15"
 };
 
-// Footpaths that are missing from OpenStreetMap. Routes (and 360° arrows) can
-// use these. Each one is a list of [lat, lng] points; it must start/end
+// Footpaths that are missing from OpenStreetMap. Routes can use
+// these. Each one is a list of [lat, lng] points; it must start/end
 // exactly on an existing road point or close to one. Walk them to confirm.
 // Example: [[6.798751, 79.90202], [6.798990, 79.901860], [6.799223, 79.901704]],
 // TODO: routes to Nugasewana currently go round by the outside road because

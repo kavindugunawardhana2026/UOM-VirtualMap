@@ -4,7 +4,7 @@ A phone-friendly campus map for the Batch 26 inauguration. Freshers scan a QR co
 the gate or a junction, search for a place (English or Sinhala), and get the walking route
 drawn on the map with turn-by-turn directions, a photo and the floor/room.
 
-- `index.html` — the map app (search, routes from any place/QR/GPS to any place, 360° tour)
+- `index.html` — the map app (search, routes from any place/QR/GPS to any place, 3D map)
 - `qr.html` — prints the QR codes for each checkpoint
 - `print.html` — printable map / "Save as PDF" for offline sharing in the batch group
 
@@ -48,41 +48,18 @@ Then open `qr.html` on the live site, check the address box, and print.
 5. **Check the checkpoint positions** in `CHECKPOINTS`, then print `qr.html` and stick each QR at its spot.
 6. **Test with someone new** to campus: give them the QR and ask them to find 3 places alone.
 
-## 360° virtual tour
+## 3D map
 
-Every place card has a **360° view** and a **Walk there in 360°** button, and the blue "360" dots on
-the map (zoom in) open the tour. Inside the tour, ground arrows take you to the next spot along the
-path; with a destination chosen, the arrow to follow glows and the mini-map shows the route.
-
-- Spots are listed in `js/tour.js` (one in front of each building, each QR checkpoint, each junction).
-- Arrows between spots are calculated from the campus paths — no need to set them by hand.
-- Add the real 360 photos to `pano/` — see `pano/README.md`. Until then a drawn placeholder is shown.
-- Built with [Pannellum](https://pannellum.org/) (MIT).
-
-### "Real view" — Google Street View inside the tour
-
-The tour has two modes (switch at the top right):
-- **🌐 Real view** — Google's real Street View imagery for each spot. Drag to look around; the
-  buttons at the bottom jump to the next spot on the route (the glowing one leads to your destination).
-- **📷 Our 360°** — your own 360 photos from `pano/` (placeholders until you add them).
-
-Without a key, "Real view" opens the spot in the Google Maps app/website. To show it **inside** the app:
-1. Go to https://console.cloud.google.com/ → create a project → enable **Maps Embed API**
-   (it's free for Street View embeds, but Google asks for a billing account on the project).
-2. Credentials → **Create API key** → restrict it: *Application restriction* = Websites, add your site
-   (e.g. `https://<username>.github.io/*`); *API restriction* = Maps Embed API only.
-3. Paste it into `js/places.js` → `GOOGLE_MAPS_EMBED_KEY`.
-
-**Coverage (checked October 2026):** Google has car Street View on the Katubedda road at the Main Gate,
-and a few user-uploaded 360° photos inside campus (e.g. near the IT Faculty), but **no imagery at many
-spots inside campus** (e.g. Goda Canteen junction) — those show "no imagery". To fill the gaps, take
-your own 360 photos (`pano/`), or upload them to Google Maps with a 360 camera so they appear in
-Real view too.
+The cube button (and **Explore campus in 3D** / **See it in 3D** / **Route in 3D** in the app) opens a
+3D model of the campus built from OpenStreetMap (`js/map3d.js`, no key needed). The open place and its
+route are shown in 3D, and 📍 **Live Track** follows your GPS position. Campus buildings are drawn 50%
+taller than real so they stand out from the town around them — change `CAMPUS_HEIGHT_BOOST` in
+`js/map3d.js` (e.g. `1.3` = +30%, `2` = double).
 
 ## Images
 
 Each place card shows, in order: your photos (`photos/<id>.jpg`, `photos/<id>-entrance.jpg`) if
-they exist, a 360° preview, and a satellite **aerial view** with the building outlined — so every
+they exist, a "See it in 3D" button, and a satellite **aerial view** with the building outlined — so every
 place has an image from day one.
 
 ## Directions between any two places

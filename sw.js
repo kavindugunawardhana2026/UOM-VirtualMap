@@ -2,12 +2,10 @@
 const APP = "campus-app-v9";
 const TILES = "campus-tiles-v1";
 const APP_FILES = [
-  "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/tour.js", "js/tour-viewer.js", "js/fx.js", "js/map3d.js", "icon.svg",
+  "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/fx.js", "js/map3d.js", "icon.svg",
   "manifest.webmanifest",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css",
-  "https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js",
 ];
 
 self.addEventListener("install", (e) => {
