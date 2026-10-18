@@ -40,6 +40,10 @@ window.EVENT = {
 // OSM has no path from campus to it — add the real footpath (and set the
 // hostel's `entrance`) after checking on site.
 window.EXTRA_PATHS = [
+  // Back Gate (north), on Mill Road next to the Juice Shop: the short path from the
+  // campus road through the gate, joined into Mill Road both ways.
+  [[6.798511, 79.901123], [6.79859, 79.901123]],
+  [[6.798583, 79.900991], [6.79859, 79.901123], [6.79861, 79.9014]],
 ];
 
 window.CATEGORIES = {
@@ -61,7 +65,7 @@ window.CHECKPOINTS = [
   { id: "side-gate", name: "Side Gate", si: "පැති ගේට්ටුව",
     at: [6.795323, 79.899839], isGate: true, note: "Side entrance near the Arthur C. Clarke Institute" },
   { id: "back-gate", name: "Back Gate (North)", si: "පසුපස ගේට්ටුව",
-    at: [6.798215, 79.903337], isGate: true, note: "Northern entrance near Civil Engineering" },
+    at: [6.79859, 79.901123], isGate: true, note: "Northern entrance on Mill Road, next to the Juice Shop" },
   { id: "goda-junction", name: "Goda Canteen Junction", si: "ගොඩ කැන්ටිම හන්දිය",
     at: [6.796529, 79.900862], note: "Main Street meets Sumanadasa Front Road" },
   { id: "it-front", name: "In front of the IT Faculty", si: "IT පීඨය ඉදිරිපිට",
