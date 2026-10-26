@@ -36,6 +36,8 @@ Ask the owner before reusing them elsewhere, and replace any photo if its owner 
 | `degree-it.jpg` | BSc Hons IT card | https://uom.lk/itfac (slideshow `banner3.jpg`, right half) | FIT computer lab. Enlarged from 427 × 300. |
 | `degree-itm.jpg` | BSc Hons IT & M card | https://uom.lk/itfac (slideshow `banner3.jpg`, left half) | FIT students working as a team. Enlarged from 466 × 300. |
 | `degree-ai.jpg` | BSc Hons AI card | https://itfac.uom.ac.lk/gallery/ (`images/gallery/1.jpg`) | FIT EXPO 2025, Batch 23: students with their "Chess Navigator" robot. Photographed by Dinusha Ekanayake and Achira Sandaruwan for FIT Moments (IT Faculty Media Unit). The event banner along the bottom is cropped off. |
+| `bit-logo.png` | Bachelor of IT card | https://bit.uom.lk/ (`wp-content/uploads/2023/12/Untitled-1-4-1.png`) | The BIT programme logo (University of Moratuwa, CODL). |
+| `degree-pg.jpg` | MSc · MPhil · PhD card | https://unsplash.com/photos/person-holding-black-academic-hat-oTglG1D4hRA (photo by RUT MIIT) | A graduation cap held up. Unsplash License (free to use). |
 | `guide-robot.webp` | Robot guide on the landing page | https://unsplash.com/photos/a-white-robot-is-standing-in-front-of-a-black-background-CjWsslYVnPI | Unsplash License (free to use). Cropped, flipped to face left, black background removed, and the yellow eye recoloured blue. |
 
 The About card uses `fit-building.jpg`: the FIT building with its name sign, supplied by the project team.

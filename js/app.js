@@ -70,11 +70,21 @@
     if (!sat_) for (const ring of Object.values(CAMPUS_DATA.buildings)) {
       L.polygon(shift(ring), { stroke: false, fillColor: css("--bldg-shadow"), fillOpacity: 1, interactive: false, className: "bldg-shadow" }).addTo(vector);
     }
+    // Hostel compounds: a dashed outline under the building footprints.
+    for (const [id, ring] of Object.entries(CAMPUS_DATA.areas || {})) {
+      buildingLayers[id] = L.polygon(ring, outlineStyle(id, false)).addTo(vector);
+    }
     for (const [id, ring] of Object.entries(CAMPUS_DATA.buildings)) {
       buildingLayers[id] = L.polygon(ring, buildingStyle(false)).addTo(vector);
     }
     const place = byId[state.selected];
-    if (place && buildingLayers[place.osm]) buildingLayers[place.osm].setStyle(buildingStyle(true, place));
+    if (place && buildingLayers[place.osm]) buildingLayers[place.osm].setStyle(outlineStyle(place.osm, true, place));
+  }
+  // Style for an outline by OSM id: a compound (CAMPUS_DATA.areas) or a building.
+  function outlineStyle(id, sel, p) {
+    if (!(CAMPUS_DATA.areas || {})[id]) return buildingStyle(sel, p);
+    const c = sel ? (CATEGORIES[p.cat] || CATEGORIES.other).color : css("--accent");
+    return { color: c, weight: sel ? 3 : 1.5, dashArray: sel ? null : "4 5", fillColor: c, fillOpacity: sel ? 0.22 : 0.05, opacity: sel ? 1 : 0.7, interactive: false };
   }
   function buildingStyle(sel, p) {
     if (sel) {
@@ -144,13 +154,13 @@
     const prev = byId[state.selected];
     if (prev) {
       pins[prev.id].setIcon(pinIcon(prev, false)).setZIndexOffset(0);
-      if (buildingLayers[prev.osm]) buildingLayers[prev.osm].setStyle(buildingStyle(false));
+      if (buildingLayers[prev.osm]) buildingLayers[prev.osm].setStyle(outlineStyle(prev.osm, false));
     }
     state.selected = id; state.room = room;
     const p = byId[id];
     if (p) {
       pins[id].setIcon(pinIcon(p, true)).setZIndexOffset(1000);
-      if (buildingLayers[p.osm]) buildingLayers[p.osm].setStyle(buildingStyle(true, p));
+      if (buildingLayers[p.osm]) buildingLayers[p.osm].setStyle(outlineStyle(p.osm, true, p));
     }
     sheet.classList.remove("collapsed");
     updateURL();
@@ -412,7 +422,8 @@
       doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false, zoomSnap: 0.5 })
       .setView(p.at, 18.5);
     L.tileLayer(sat._url, { maxNativeZoom: 19, maxZoom: 20 }).addTo(aerialMap);
-    if (CAMPUS_DATA.buildings[p.osm]) L.polygon(CAMPUS_DATA.buildings[p.osm], { color: "#facc15", weight: 3, fill: false }).addTo(aerialMap);
+    const ring = CAMPUS_DATA.buildings[p.osm] || (CAMPUS_DATA.areas || {})[p.osm];
+    if (ring) L.polygon(ring, { color: "#facc15", weight: 3, fill: false }).addTo(aerialMap);
     else L.circleMarker(p.at, { radius: 10, color: "#facc15", weight: 3, fill: false }).addTo(aerialMap);
     L.control.attribution({ prefix: false }).addAttribution("Esri").addTo(aerialMap);
 

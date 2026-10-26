@@ -147,14 +147,14 @@ window.PLACES = [
     cat: "sports", icon: "🎭", osm: "395935732", at: [6.798003, 79.900704] },
 
   // ---- Hostels -----------------------------------------------------------
-  // Patuwatha: outside campus, across Mill Road from the Back Gate. The outline is
-  // its Block 3 (the only one of its buildings in OpenStreetMap).
+  // Patuwatha and the New Hostel Complex: outside campus, north of the Back Gate.
+  // Their `osm` ids are the whole compounds (CAMPUS_DATA.areas), not single buildings.
   { id: "patuwatha", name: "Patuwathawithana Hostel Complex", aka: ["Patuwatha", "Patuwathawithana", "HP"],
-    cat: "hostel", osm: "596745090", at: [6.79949, 79.90096],
-    desc: "Boys' hostel complex just outside the Back Gate, on the other side of Mill Road." },
+    cat: "hostel", osm: "596753684", at: [6.79972, 79.90094],
+    desc: "Boys' hostel complex (Blocks 1 to 3) just outside the Back Gate, across Mill Road." },
   { id: "new-hostel", name: "New Hostel Complex", si: "නව නේවාසිකාගාර සංකීර්ණය", aka: ["HN", "New Hostel"],
-    cat: "hostel", osm: "985126429", at: [6.799236, 79.900992],
-    desc: "Directly in front of Patuwatha, by New Hostel Road. Just outside the Back Gate." },
+    cat: "hostel", osm: "272558765", at: [6.79996, 79.90121],
+    desc: "Across the lane from Patuwatha, just north of the Back Gate." },
   { id: "nugasewana", name: "Nugasewana Hostel Complex", si: "නුගසෙවන නේවාසිකාගාරය",
     cat: "hostel", osm: "395935839", at: [6.799146, 79.902097], floors: 4 },
   { id: "girls-hostel", name: "B, C Hostel", si: "B, C නේවාසිකාගාරය", aka: ["B Hostel", "C Hostel", "HB", "HC", "Girls' Hostel", "Girls Hostel"],
