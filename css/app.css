@@ -858,9 +858,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .l-card.p-itm { --photo: url("../photos/degree-itm.jpg"); --pos: 45% 40%; }
 .l-card.p-ai { --photo: url("../photos/degree-ai.jpg"); --pos: 58% 45%; }
 .l-card.p-pg { --photo: url("../photos/degree-pg.jpg"); --pos: 50% 30%; }
-/* BIT card: the programme's logo on the left of the tag row. */
-.l-card-tags.has-logo { justify-content: space-between; align-items: flex-start; }
-.l-card-logo { height: 58px; width: auto; border-radius: 8px; box-shadow: 0 10px 30px -12px rgba(0,0,0,.6); }
+/* BIT card: the programme's logo fills the card on white; the text sits on a dark band at the bottom. */
+.l-card.p-bit::before { background: #fff url("../photos/bit-logo.png") 50% 14px / auto calc(100% - 168px) no-repeat; filter: none; }
+.l-card.p-bit::after { background: linear-gradient(180deg, transparent calc(100% - 158px), rgba(4,8,20,.9) calc(100% - 118px), rgba(4,8,20,.97) 100%); }
+.l-card.p-bit h3 { margin-top: auto; }
 .l-card.photo h3 { text-shadow: 0 2px 20px rgba(4,8,20,.8); }
 .l-card.dark { color: var(--text); background: radial-gradient(120% 90% at 100% 0%, rgba(79,140,255,.28), transparent 55%), linear-gradient(160deg, var(--card-a), var(--card-b)); border: 1px solid var(--line); }
 @media (min-width: 900px) {

@@ -1,5 +1,5 @@
 // Offline support: app files are cached on first visit, map tiles as you browse.
-const APP = "campus-app-v18";
+const APP = "campus-app-v20";
 const TILES = "campus-tiles-v1";
 const APP_FILES = [
   "./", "index.html", "css/app.css", "js/app.js", "js/router.js", "js/places.js", "js/campus-data.js", "js/fx.js", "js/map3d.js", "icon.svg",
