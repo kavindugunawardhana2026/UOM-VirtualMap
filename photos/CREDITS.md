@@ -27,3 +27,14 @@ Ask the owner before reusing them elsewhere, and replace any photo if its owner 
 | `wala-canteen.jpg` | Wala Canteen | https://vymaps.com/LK/Wala-Canteen-68860/ | Interior dining area. |
 
 `earth-resources.jpg`, `textile.jpg`, `lagaan.jpg` and `nugasewana.jpg` were resized (max 1600 px) to load faster on phones.
+
+## Landing page photos
+
+| File | Used for | Source | Notes |
+|---|---|---|---|
+| `faculty-aerial.jpg`, `faculty-aerial-sm.jpg` | Landing page hero | Supplied by the project team | Drone view of the Faculty of IT at sunrise. |
+| `degree-it.jpg` | BSc Hons IT card | https://uom.lk/itfac (slideshow `banner3.jpg`, right half) | FIT computer lab. Enlarged from 427 × 300. |
+| `degree-itm.jpg` | BSc Hons IT & M card | https://uom.lk/itfac (slideshow `banner3.jpg`, left half) | FIT students working as a team. Enlarged from 466 × 300. |
+| `degree-ai.jpg` | BSc Hons AI card | https://unsplash.com/photos/white-robot-near-brown-wall-2EJCSULRwC8 (photo by Alex Knight) | Pepper robot. Unsplash License (free to use, no permission needed). |
+
+The About card uses `it-faculty.jpg` (listed above).

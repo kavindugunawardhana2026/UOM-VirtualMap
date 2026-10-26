@@ -19,6 +19,9 @@
 //   - photo:     put a photo at photos/<id>.jpg (and optionally
 //                photos/<id>-entrance.jpg). Missing photos are skipped.
 //
+//   - icon:      emoji for this place's pin and label. Leave it out to use
+//                its category's icon.
+//
 //  "osm" is the OpenStreetMap way id used to highlight the outline.
 
 window.EVENT = {
@@ -41,7 +44,7 @@ window.EVENT = {
 // OSM has no path from campus to it — add the real footpath (and set the
 // hostel's `entrance`) after checking on site.
 window.EXTRA_PATHS = [
-  // Back Gate (north), on Mill Road next to the Juice Shop: the short path from the
+  // Back Gate (north), on Mill Road opposite Patuwatha: the short path from the
   // campus road through the gate out to Mill Road.
   [[6.798511, 79.901123], [6.79859, 79.901123]],
   // Side Gate walkways (marked on site): from just inside the gate, east past the
@@ -78,7 +81,7 @@ window.CHECKPOINTS = [
   { id: "main-gate", name: "Main Gate (Katubedda)", si: "ප්‍රධාන ගේට්ටුව",
     at: [6.794955, 79.900744], isGate: true, note: "Vehicles only — walk in through the Side Gate" },
   { id: "back-gate", name: "Back Gate (North)", si: "පසුපස ගේට්ටුව",
-    at: [6.79859, 79.901123], isGate: true, note: "Northern entrance on Mill Road, next to the Juice Shop" },
+    at: [6.79859, 79.901123], isGate: true, note: "Northern entrance on Mill Road, across from Patuwatha" },
   { id: "goda-junction", name: "Goda Canteen Junction", si: "ගොඩ කැන්ටිම හන්දිය",
     at: [6.796529, 79.900862], note: "Main Street meets Sumanadasa Front Road" },
   { id: "it-front", name: "In front of the IT Faculty", si: "IT පීඨය ඉදිරිපිට",
@@ -89,20 +92,20 @@ window.PLACES = [
   // ---- Faculty of IT & nearby teaching buildings -------------------------
   { id: "it-faculty", name: "Faculty of Information Technology",
     si: "තොරතුරු තාක්ෂණ පීඨය", aka: ["IT Faculty", "FIT", "ITFac", "IT Department"],
-    cat: "faculty", osm: "395935840", at: [6.797117, 79.901869], floors: 4,
+    cat: "faculty", icon: "💻", osm: "395935840", at: [6.797117, 79.901869], floors: 4,
     desc: "Home of Batch 26. Lecture halls, labs and the faculty office are in this building.",
     rooms: [] },
   { id: "business", name: "Faculty of Business", si: "ව්‍යාපාර පීඨය",
-    cat: "faculty", osm: "1444650029", at: [6.797415, 79.901229], floors: 2, rooms: [] },
+    cat: "faculty", icon: "💼", osm: "1444650029", at: [6.797415, 79.901229], floors: 2, rooms: [] },
   { id: "l-building", name: "L Building", si: "L ගොඩනැගිල්ල",
-    cat: "faculty", osm: "395935842", at: [6.797581, 79.901378], floors: 3, rooms: [] },
+    cat: "faculty", icon: "🏫", osm: "395935842", at: [6.797581, 79.901378], floors: 3, rooms: [] },
   { id: "sumanadasa", name: "Sumanadasa Building", si: "සුමනදාස ගොඩනැගිල්ල",
-    aka: ["Engineering Faculty"], cat: "faculty", osm: "220323121", at: [6.796853, 79.900556],
+    aka: ["Engineering Faculty", "Faculty of Engineering"], cat: "faculty", icon: "⚙️", osm: "220323121", at: [6.796853, 79.900556],
     desc: "Large central building of the Faculty of Engineering.", rooms: [] },
   { id: "new-classroom", name: "New Classroom Block", si: "නව පන්ති කාමර ගොඩනැගිල්ල",
-    cat: "faculty", osm: "220323155", at: [6.796577, 79.901582], floors: 3, rooms: [] },
+    cat: "faculty", icon: "🏫", osm: "220323155", at: [6.796577, 79.901582], floors: 3, rooms: [] },
   { id: "exam-hall", name: "Examination Hall", si: "විභාග ශාලාව",
-    cat: "faculty", osm: "220296316", at: [6.79602, 79.90189], rooms: [] },
+    cat: "faculty", icon: "📝", osm: "220296316", at: [6.79602, 79.90189], rooms: [] },
 
   // ---- Services ----------------------------------------------------------
   { id: "library", name: "University Library", si: "පුස්තකාලය", aka: ["Library"],
@@ -125,24 +128,34 @@ window.PLACES = [
     photos: [{ src: "photos/wala-canteen.jpg", caption: "Inside" }] },
   { id: "food-court", name: "Food Court & Study Area", si: "ආහාර සහ අධ්‍යයන ප්‍රදේශය",
     aka: ["Canteen"], cat: "food", osm: "257709525", at: [6.796297, 79.900585] },
-  { id: "juice-shop", name: "Juice Shop", si: "යුෂ කඩේ",
-    cat: "food", osm: "395935730", at: [6.7987, 79.901158] },
+  // The university's canteen page puts this canteen in the L Block. The pin is on
+  // the L Building; move `at` to the canteen door after checking on site.
+  { id: "l-canteen", name: "L Canteen", si: "L කැන්ටිම", aka: ["Canteen", "L Block Canteen"],
+    cat: "food", at: [6.79746, 79.90143] },
 
   // ---- Sports & open areas ----------------------------------------------
   { id: "gym", name: "UoM Gymnasium", si: "ව්‍යායාම ශාලාව", aka: ["Gym"],
-    cat: "sports", osm: "220298433", at: [6.797641, 79.900542] },
+    cat: "sports", icon: "🏋️", osm: "220298433", at: [6.797641, 79.900542] },
   { id: "playground", name: "University Playground", si: "ක්‍රීඩාංගණය", aka: ["Ground"],
-    cat: "sports", at: [6.798146, 79.899463],
+    cat: "sports", icon: "🏟️", at: [6.798146, 79.899463],
     photos: [{ src: "photos/playground.jpg", caption: "Cricket on the ground" }] },
   { id: "lagaan", name: "Lagaan (open-air theatre)", si: "ලගාන්", aka: ["Open air theatre"],
-    cat: "sports", osm: "395935732", at: [6.798003, 79.900704] },
+    cat: "sports", icon: "🎭", osm: "395935732", at: [6.798003, 79.900704] },
 
   // ---- Hostels -----------------------------------------------------------
+  // Patuwatha: outside campus, across Mill Road from the Back Gate. The outline is
+  // its Block 3 (the only one of its buildings in OpenStreetMap).
+  { id: "patuwatha", name: "Patuwathawithana Hostel Complex", aka: ["Patuwatha", "Patuwathawithana", "HP"],
+    cat: "hostel", osm: "596745090", at: [6.79949, 79.90096],
+    desc: "Boys' hostel complex just outside the Back Gate, on the other side of Mill Road." },
+  { id: "new-hostel", name: "New Hostel Complex", si: "නව නේවාසිකාගාර සංකීර්ණය", aka: ["HN", "New Hostel"],
+    cat: "hostel", osm: "985126429", at: [6.799236, 79.900992],
+    desc: "Directly in front of Patuwatha, by New Hostel Road. Just outside the Back Gate." },
   { id: "nugasewana", name: "Nugasewana Hostel Complex", si: "නුගසෙවන නේවාසිකාගාරය",
     cat: "hostel", osm: "395935839", at: [6.799146, 79.902097], floors: 4 },
-  { id: "girls-hostel", name: "Girls' Hostel", si: "කාන්තා නේවාසිකාගාරය",
+  { id: "girls-hostel", name: "B Hostel", si: "B නේවාසිකාගාරය", aka: ["HB", "Girls' Hostel", "Girls Hostel"],
     cat: "hostel", osm: "395935918", at: [6.796881, 79.902756], floors: 3 },
-  { id: "boys-hostel", name: "Boys' Hostel", si: "පිරිමි නේවාසිකාගාරය",
+  { id: "boys-hostel", name: "A Hostel", si: "A නේවාසිකාගාරය", aka: ["HA", "Boys' Hostel", "Boys Hostel"],
     cat: "hostel", osm: "1444650030", at: [6.797339, 79.902217], floors: 3 },
 
   // ---- Other departments / landmarks ------------------------------------
@@ -155,7 +168,7 @@ window.PLACES = [
   { id: "earth-resources", name: "Dept. of Earth Resources Engineering",
     cat: "other", osm: "233522243", at: [6.796451, 79.899693] },
   { id: "architecture", name: "Faculty of Architecture (New Building)",
-    aka: ["Architecture"], cat: "other", osm: "540767240", at: [6.795447, 79.901524], floors: 4 },
+    aka: ["Architecture"], cat: "faculty", icon: "📐", osm: "540767240", at: [6.795447, 79.901524], floors: 4 },
   { id: "ce-lab", name: "Civil Engineering Research Lab", cat: "other",
     osm: "395935833", at: [6.797976, 79.902657], floors: 4 },
   { id: "accimt", name: "Arthur C. Clarke Institute (ACCIMT)", aka: ["ACCIMT"],
@@ -164,3 +177,6 @@ window.PLACES = [
   { id: "civil-car-park", name: "Civil Car Park", si: "වාහන නැවැත්වීම", aka: ["Parking"],
     cat: "other", osm: "395935835", at: [6.79823, 79.902498] },
 ];
+
+// A place's own icon, or its category's when it has none.
+window.placeIcon = (p) => p.icon || (window.CATEGORIES[p.cat] || window.CATEGORIES.other).icon;

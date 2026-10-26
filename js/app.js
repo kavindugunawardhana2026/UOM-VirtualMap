@@ -1,5 +1,7 @@
 (function () {
   const { PLACES, CHECKPOINTS, CATEGORIES, EVENT, CAMPUS_DATA, CampusRouter, FX } = window;
+  // From places.js; the fallback covers an older cached places.js.
+  const placeIcon = window.placeIcon || ((p) => p.icon || (CATEGORIES[p.cat] || CATEGORIES.other).icon);
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const byId = Object.fromEntries(PLACES.map((p) => [p.id, p]));
@@ -91,7 +93,7 @@
     const size = sel ? 44 : 32;
     return L.divIcon({
       className: "", iconSize: [size, size], iconAnchor: [size / 2, size],
-      html: `<div class="pin-wrap${sel ? " sel" : ""}" style="--pc:${c.color};--d:${delay}ms"><div class="pin${sel ? " sel" : ""}"><span>${c.icon}</span></div></div>`,
+      html: `<div class="pin-wrap${sel ? " sel" : ""}" style="--pc:${c.color};--d:${delay}ms"><div class="pin${sel ? " sel" : ""}"><span>${placeIcon(p)}</span></div></div>`,
     });
   }
   function dropPins(baseDelay = 0) {
@@ -282,7 +284,7 @@
 
   // Shortcut tiles on the home screen (a place id or a category).
   const QUICK = [
-    { label: "IT Faculty", icon: "🎓", go: "it-faculty", color: "#4f8cff" },
+    { label: "IT Faculty", icon: "💻", go: "it-faculty", color: "#4f8cff" },
     { label: "Canteens", icon: "🍛", cat: "food", color: "#ffa36b" },
     { label: "Library", icon: "📚", go: "library", color: "#7dd3fc" },
     { label: "Medical", icon: "🏥", go: "medical", color: "#ff7aa8" },
@@ -315,7 +317,7 @@
       const c = CATEGORIES[p.cat] || CATEGORIES.other;
       const sub = r ? `${esc(r.code)} · ${esc(r.floor || "")} — in ${esc(p.name)}` : esc(p.si || c.label);
       return `<li style="--i:${i}"><button data-go="${esc(p.id)}" ${r ? `data-room="${esc(r.code)}"` : ""}>
-        <span class="ico" style="background:linear-gradient(135deg, ${c.color}33, ${c.color}14)">${c.icon}</span>
+        <span class="ico" style="background:linear-gradient(135deg, ${c.color}33, ${c.color}14)">${placeIcon(p)}</span>
         <span><div class="t">${esc(r ? r.name : p.name)}</div><div class="s">${sub}</div></span>
         <span class="dist">${Math.round(CampusRouter.dist(from, p.at) / 10) * 10} m</span></button></li>`;
     }).join("");
@@ -369,7 +371,7 @@
 
     body.innerHTML = `
       <div class="place-hero" style="--c:${c.color}">
-        <div class="ph-emoji">${c.icon}</div>
+        <div class="ph-emoji">${placeIcon(p)}</div>
         <div><span class="ph-cat">${esc(c.label)}</span><h2 data-scramble>${esc(room ? room.name : p.name)}</h2><div class="si">${esc(room ? `in ${p.name}` : p.si || "")}</div></div>
         <button class="icon-btn back" id="back" aria-label="Back to list">✕</button>
       </div>

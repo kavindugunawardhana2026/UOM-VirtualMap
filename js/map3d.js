@@ -13,6 +13,7 @@
 //   map3d:click                     empty map tapped here
 (function () {
   const { PLACES, CATEGORIES, CAMPUS_DATA, CampusRouter, FX } = window;
+  const placeIcon = window.placeIcon || ((p) => p.icon || (CATEGORIES[p.cat] || CATEGORIES.other).icon);
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const byId = Object.fromEntries(PLACES.map((p) => [p.id, p]));
@@ -39,7 +40,7 @@
   const FLOOR_M = 3.6, ROOF_M = 1.5;
   const FLOORS = {
     sumanadasa: 4, "exam-hall": 2, library: 3, admin: 3, medical: 1, "goda-canteen": 1, "wala-canteen": 1,
-    "food-court": 1, "juice-shop": 1, textile: 3, "transport-eng": 2, "earth-resources": 2,
+    "food-court": 1, textile: 3, "transport-eng": 2, "earth-resources": 2,
   };
   const HEIGHT_M = { gym: 11, "buddha-statue": 6, lagaan: 1.2, "civil-car-park": 0.3 };
   const heightOf = (p) => HEIGHT_M[p.id] ?? Math.round(((p.floors ?? FLOORS[p.id] ?? 2) * FLOOR_M + ROOF_M) * 10) / 10;
@@ -270,7 +271,7 @@
       const c = CATEGORIES[p.cat] || CATEGORIES.other;
       const el = document.createElement("div");
       el.className = "m3d-anchor";
-      el.innerHTML = `<button class="m3d-label" style="--c:${c.color}" aria-label="${esc(p.name)}"><span class="i">${c.icon}</span><span class="t">${esc(shortName(p))}</span></button>`;
+      el.innerHTML = `<button class="m3d-label" style="--c:${c.color}" aria-label="${esc(p.name)}"><span class="i">${placeIcon(p)}</span><span class="t">${esc(shortName(p))}</span></button>`;
       const inner = el.firstChild;
       inner.onclick = (e) => { e.stopPropagation(); dispatchEvent(new CustomEvent("map3d:select", { detail: p.id })); };
       const marker = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat(ll(p.at)).addTo(map);

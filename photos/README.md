@@ -14,6 +14,7 @@ Places with no photo just show "Photo coming soon".
 
 Photo shot list (take these on one walk):
 it-faculty, it-faculty-entrance, business, l-building, sumanadasa, new-classroom, exam-hall,
-library, admin, medical, buddha-statue, goda-canteen, wala-canteen, food-court, juice-shop,
-gym, playground, lagaan, nugasewana, girls-hostel, boys-hostel, tlm, textile,
+library, admin, medical, buddha-statue, goda-canteen, wala-canteen, food-court, l-canteen,
+gym, playground, lagaan, nugasewana, patuwatha, new-hostel, girls-hostel (B Hostel),
+boys-hostel (A Hostel), tlm, textile,
 transport-eng, earth-resources, architecture, ce-lab, accimt, civil-car-park
