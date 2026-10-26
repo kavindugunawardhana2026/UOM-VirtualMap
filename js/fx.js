@@ -228,8 +228,8 @@
 
   // ---------------------------------------------------------- landing
   // Scroll effects for the landing page: sections fade/blur in and decode
-  // their headings, the hero photo drifts slower than the page, the orb
-  // changes shape for each numbered step, plus a progress bar and nav tint.
+  // their headings, the hero photo drifts slower than the page, the robot
+  // guide changes pose for each numbered step, plus a progress bar and nav tint.
   function landing(el) {
     if (el.dataset.ready) return;
     el.dataset.ready = "1";
@@ -244,11 +244,44 @@
     }, { root: el, rootMargin: "0px 0px -12% 0px", threshold: 0.12 });
     el.querySelectorAll(".reveal").forEach((n) => reveal.observe(n));
 
-    const orb = el.querySelector(".l-orb");
+    // Robot guide: a new pose and line for each step, eyes follow the pointer,
+    // and tapping it (or its button) opens the map.
+    const guide = el.querySelector(".l-guide"), bot = el.querySelector("#l-bot");
+    const say = el.querySelector(".l-bot-say"), sayText = el.querySelector("#l-bot-text");
+    const LINES = {
+      1: "Hi! I'm your campus guide.",
+      2: "Three departments. I know the way to all of them.",
+      3: "Lecture hall, lab or canteen? I'll draw you the route.",
+      4: "Ready? Let's find your way.",
+    };
     const steps = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting && orb) orb.dataset.step = e.target.dataset.step;
+      for (const e of entries) {
+        const n = e.target.dataset.step;
+        if (!e.isIntersecting || !guide || guide.dataset.step === n) continue;
+        guide.dataset.step = n;
+        sayText.textContent = LINES[n] || LINES[1];
+        say.classList.remove("pop"); void say.offsetWidth; say.classList.add("pop");
+      }
     }, { root: el, rootMargin: "-45% 0px -45% 0px" });
     el.querySelectorAll(".l-step").forEach((n) => steps.observe(n));
+    const openMap = () => document.getElementById("intro-skip")?.click();
+    if (bot) bot.onclick = () => {
+      bot.classList.remove("hop"); void bot.offsetWidth; bot.classList.add("hop");
+      setTimeout(openMap, reduced ? 0 : 380);
+    };
+    el.querySelector(".l-bot-go")?.addEventListener("click", openMap);
+    if (guide && !reduced) {
+      let raf = 0, px = 0, py = 0;
+      const look = () => {
+        raf = 0;
+        const r = bot.getBoundingClientRect();
+        const clamp = (v) => Math.max(-1, Math.min(1, v));
+        guide.style.setProperty("--ex", clamp((px - (r.left + r.width / 2)) / (innerWidth / 2)).toFixed(3));
+        guide.style.setProperty("--ey", clamp((py - (r.top + r.height * 0.35)) / (innerHeight / 2)).toFixed(3));
+      };
+      el.addEventListener("pointermove", (e) => { px = e.clientX; py = e.clientY; if (!raf) raf = requestAnimationFrame(look); }, { passive: true });
+      el.addEventListener("pointerleave", () => { guide.style.setProperty("--ex", 0); guide.style.setProperty("--ey", 0); });
+    }
 
     const photo = el.querySelector(".l-hero-photo"), inner = el.querySelector(".l-hero .intro-inner");
     const card = el.querySelector(".l-about-card"), bar = el.querySelector(".l-progress");

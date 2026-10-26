@@ -80,14 +80,60 @@
         <button class="btn-line" data-place="it-faculty">See it on the map <span aria-hidden="true">→</span></button>
       </div>
       <figure class="l-about-card reveal">
-        <img src="photos/it-faculty.jpg" alt="The entrance of the Faculty of Information Technology" loading="lazy">
+        <img src="photos/fit-building.jpg" alt="The Faculty of Information Technology building and its name sign" loading="lazy">
         <figcaption>FIT · Katubedda</figcaption>
       </figure>
     </section>
 
-    <!-- 02 · Numbered story with a sticky morphing orb -->
+    <!-- 02 · Numbered story with a sticky robot guide that changes pose per step -->
     <section class="l-story" id="l-story">
-      <div class="l-orb-wrap" aria-hidden="true"><div class="l-orb"><span></span></div></div>
+      <div class="l-guide-wrap">
+        <div class="l-guide" data-step="1">
+          <p class="l-bot-say" aria-live="polite"><span id="l-bot-text">Hi! I'm your campus guide.</span></p>
+          <button class="l-bot" id="l-bot" type="button" aria-label="Open the campus map">
+            <span class="bot-stage">
+              <img class="bot-img" src="photos/guide-robot.webp" width="900" height="810" alt="" decoding="async">
+              <span class="bot-eye-glow"></span>
+              <!-- Effects drawn over the photo; 100 x 90 units = the photo's shape. -->
+              <svg class="bot-fx" viewBox="0 0 100 90" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="botBeam" x1="1" y1="0" x2="0" y2="0">
+                    <stop offset="0" stop-color="#7cf3ff" stop-opacity=".6"/><stop offset="1" stop-color="#7cf3ff" stop-opacity="0"/>
+                  </linearGradient>
+                  <linearGradient id="botScan" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#7cf3ff" stop-opacity="0"/><stop offset=".5" stop-color="#7cf3ff" stop-opacity=".55"/><stop offset="1" stop-color="#7cf3ff" stop-opacity="0"/>
+                  </linearGradient>
+                  <filter id="botGlow" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur stdDeviation=".8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <!-- step 1: a scan sweeps over the head -->
+                <rect class="bot-scan" x="20" y="0" width="70" height="8" fill="url(#botScan)"/>
+                <!-- step 2: arrows flow out in front of the face -->
+                <g class="bot-arrows" filter="url(#botGlow)">
+                  <path d="M21 30l-5 4 5 4"/><path d="M13 30l-5 4 5 4"/><path d="M5 30l-5 4 5 4"/>
+                </g>
+                <!-- step 3: the eye projects a map with a walking route -->
+                <g class="bot-holo">
+                  <path d="M37.4 33.5L2 50V82Z" fill="url(#botBeam)" opacity=".7"/>
+                  <rect x="-14" y="50" width="30" height="32" rx="3" fill="#0b2a6b" fill-opacity=".6" stroke="#7cf3ff" stroke-opacity=".85" stroke-width=".6"/>
+                  <path d="M-11 60H13M-11 71H13M-4 52V80M6 52V80" stroke="#7cf3ff" stroke-opacity=".2" stroke-width=".6"/>
+                  <path class="bot-route" d="M-10 78c4-1 4-8 9-9s7-4 9-12"/>
+                  <circle cx="-10" cy="78" r="1.4" fill="#7cf3ff"/>
+                  <path d="M8 52c-1.6 0-3 1.3-3 2.9 0 2.1 3 4.6 3 4.6s3-2.5 3-4.6c0-1.6-1.4-2.9-3-2.9z" fill="#ff7aa8" filter="url(#botGlow)"/>
+                </g>
+                <!-- step 4: sparkles -->
+                <g class="bot-spark" filter="url(#botGlow)">
+                  <path d="M18 8l1.4 3.4 3.4 1.4-3.4 1.4L18 17.6l-1.4-3.4-3.4-1.4 3.4-1.4z"/>
+                  <path d="M84 6l1 2.4 2.4 1-2.4 1L84 12.8l-1-2.4-2.4-1 2.4-1z"/>
+                  <path d="M10 46l1 2.4 2.4 1-2.4 1L10 52.8l-1-2.4-2.4-1 2.4-1z"/>
+                </g>
+              </svg>
+            </span>
+          </button>
+          <button class="l-bot-go" type="button">Show me the way <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
       <div class="l-steps">
         <article class="l-step reveal" data-step="1">
           <p class="l-kicker">01 — Origin</p>
@@ -198,7 +244,7 @@
       <button id="brand" class="brand" title="Welcome screen" aria-label="Show welcome screen"><small>BATCH</small>26</button>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" autocomplete="off"
-             placeholder="Search: library, canteen, IT faculty, ගොඩ කැන්ටිම…" aria-label="Search places">
+             placeholder="Search: library, canteen, IT faculty, Goda Canteen…" aria-label="Search places">
       <button id="clear-q" class="icon-btn" aria-label="Clear search" hidden>✕</button>
     </div>
     <div id="chips" class="chips" role="toolbar" aria-label="Filter by category"></div>

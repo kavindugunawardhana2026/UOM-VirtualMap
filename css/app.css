@@ -719,20 +719,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--quote); text-shadow: 0 0 40px rgba(79,140,255,.35);
 }
 .l-about-card {
-  position: relative; margin: 0; border-radius: 18px; overflow: hidden; aspect-ratio: 4 / 5; border: 1px solid var(--line);
+  position: relative; margin: 0; border-radius: 18px; overflow: hidden; aspect-ratio: 5 / 4; border: 1px solid var(--line);
   box-shadow: 0 30px 80px -30px rgba(30,90,220,.55);
   clip-path: inset(14% 8% 14% 8% round 18px);
   transition: clip-path 1.3s var(--ease-out), opacity .9s var(--ease-out), transform 1s var(--ease-out), filter .9s;
 }
 .l-about-card.in { clip-path: inset(0 round 18px); }
-.l-about-card img { position: absolute; inset: -8% 0; width: 100%; height: 116%; object-fit: cover; object-position: 4% 50%; transform: translateY(var(--py, 0)); filter: saturate(.85) brightness(.8); }
-.l-about-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: #0b3aa8; mix-blend-mode: color; opacity: .35; }
-.l-about-card::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 50%, rgba(4,8,20,.85)); }
+.l-about-card img { position: absolute; inset: -8% 0; width: 100%; height: 116%; object-fit: cover; object-position: 0% 50%; transform: translateY(var(--py, 0)); filter: saturate(1.05) brightness(.95); }
+.l-about-card::before { content: ""; position: absolute; inset: 0; z-index: 1; background: #0b3aa8; mix-blend-mode: color; opacity: .1; }
+.l-about-card::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 62%, rgba(4,8,20,.8)); }
 .l-about-card figcaption { position: absolute; left: 18px; bottom: 16px; z-index: 2; font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); }
 
-/* --- 02 · Story with a sticky orb that changes shape per step --- */
+/* --- 02 · Story with a sticky robot guide that changes pose per step --- */
 .l-story { display: grid; }
-.l-orb-wrap { position: sticky; top: 64px; z-index: 2; height: 200px; display: grid; place-items: center; background: linear-gradient(color-mix(in srgb, var(--bg) 94%, transparent) 72%, transparent); margin: 0 calc(-1 * max(16px, 6vw)); }
+.l-guide-wrap { position: sticky; top: 64px; z-index: 2; height: 210px; display: grid; place-items: center; background: linear-gradient(color-mix(in srgb, var(--bg) 94%, transparent) 72%, transparent); margin: 0 calc(-1 * max(16px, 6vw)); }
 .l-steps { position: relative; z-index: 1; }
 .l-step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px dashed var(--line); padding: 40px 0; }
 .l-step:last-child { border-bottom: 0; }
@@ -742,39 +742,86 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .l-tags li { font: 500 11px var(--font-mono); padding: 5px 10px; border-radius: 6px; border: 1px solid var(--line-strong); color: var(--text); background: var(--accent-soft); }
 @media (min-width: 900px) {
   .l-story { grid-template-columns: 1fr 1fr; gap: 4vw; }
-  .l-orb-wrap { order: 2; top: 0; height: 100vh; background: none; margin: 0; }
+  .l-guide-wrap { order: 2; top: 0; height: 100vh; background: none; margin: 0; }
 }
-.l-orb {
-  --s: min(34vw, 380px); width: var(--s); height: var(--s); position: relative;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 30% 26%, rgba(255,255,255,.95) 0 3%, rgba(210,228,255,.6) 7%, transparent 20%),
-    radial-gradient(circle at 72% 78%, rgba(79,140,255,.95), transparent 42%),
-    radial-gradient(circle at 25% 75%, rgba(140,190,255,.5), transparent 35%),
-    radial-gradient(circle at 50% 50%, #1b3d9a 0%, #0a1846 55%, #030818 100%);
-  box-shadow: inset -30px -34px 60px rgba(0,0,0,.75), inset 22px 20px 50px rgba(170,205,255,.4), 0 0 90px -10px rgba(79,140,255,.55);
-  transition: border-radius 1.1s var(--ease-out), transform 1.1s var(--ease-spring), box-shadow 1s;
-  animation: orbIdle 9s ease-in-out infinite;
+
+/* Robot guide. Phones: speech bubble and button on the left, robot on the right.
+   Wide screens: bubble on top, robot, then the "Show me the way" button.
+   --ex/--ey (set by fx.js) make the eyes and head follow the pointer. */
+.l-guide {
+  --s: 168px; --ex: 0; --ey: 0; --lx: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--s); align-items: center; column-gap: 12px; row-gap: 10px;
+  width: min(100%, 520px); padding: 0 max(16px, 6vw);
 }
-@media (max-width: 899px) { .l-orb { --s: 150px; } }
-/* Hole in the middle: reads as a glossy ring (Origin, Research). */
-.l-orb span {
-  position: absolute; inset: 32%; border-radius: 50%;
-  background: radial-gradient(circle at 60% 60%, #0a1846, #02050f 70%);
-  box-shadow: inset 10px 12px 22px rgba(0,0,0,.85), 0 0 0 2px rgba(150,185,255,.18), -6px -6px 18px rgba(170,205,255,.25);
-  transition: transform 1s var(--ease-spring), opacity .6s;
+.l-bot { grid-column: 2; grid-row: 1 / span 2; width: var(--s); aspect-ratio: 900 / 810; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.l-bot:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 24px; }
+.l-bot-say {
+  position: relative; justify-self: end; align-self: end; margin: 0; max-width: 260px; padding: 10px 14px; border-radius: 14px 14px 4px 14px;
+  font: 500 13px/1.4 var(--font-ui); color: var(--text);
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg)); border: 1px solid var(--line-strong);
+  box-shadow: 0 14px 40px -18px rgba(30,90,220,.7);
 }
-@keyframes orbIdle { 50% { translate: 0 -14px; rotate: 6deg; } }
-.l-orb[data-step="2"] { border-radius: 42% 58% 63% 37% / 45% 40% 60% 55%; transform: rotate(24deg) scale(.95); }
-.l-orb[data-step="2"] span { transform: scale(0); opacity: 0; }
-.l-orb[data-step="3"] { border-radius: 999px; transform: rotate(-28deg) scaleX(.48);
-  box-shadow: inset -20px -34px 60px rgba(0,0,0,.75), inset 16px 20px 50px rgba(170,205,255,.45), 0 0 110px -6px rgba(79,140,255,.85); }
-.l-orb[data-step="3"] span { inset: 8% 30%; border-radius: 999px; opacity: .9;
-  background: repeating-linear-gradient(80deg, transparent 0 14px, rgba(200,225,255,.55) 15px, transparent 17px 30px);
-  box-shadow: none; animation: zap 1.4s steps(4) infinite; }
-@keyframes zap { 50% { opacity: .4; filter: blur(1px); } }
-.l-orb[data-step="4"] { border-radius: 50%; transform: rotate(-40deg) scale(1.05); box-shadow: inset -30px -34px 60px rgba(0,0,0,.7), inset 22px 20px 50px rgba(170,205,255,.5), 0 0 140px 0 rgba(79,140,255,.6); }
-.l-orb[data-step="4"] span { inset: 38%; }
+.l-bot-say.pop { animation: botSay .45s var(--ease-spring); }
+@keyframes botSay { from { opacity: 0; transform: translateY(6px) scale(.92); } }
+.l-bot-go {
+  justify-self: end; align-self: start; font: 600 12px var(--font-mono); letter-spacing: .04em; color: var(--accent-ink); cursor: pointer;
+  padding: 8px 14px; border: 0; border-radius: 999px; background: var(--accent); box-shadow: 0 10px 28px -12px var(--accent);
+  transition: transform .25s var(--ease-spring), box-shadow .25s;
+}
+.l-bot-go:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -12px var(--accent); }
+.l-bot-go span { display: inline-block; transition: transform .25s; }
+.l-bot-go:hover span { transform: translateX(3px); }
+@media (min-width: 900px) {
+  .l-guide { --s: min(34vw, 440px); grid-template-columns: auto; justify-items: center; row-gap: 16px; padding: 0; }
+  .l-bot { grid-column: auto; grid-row: auto; }
+  .l-bot-say { justify-self: center; max-width: 300px; font-size: 15px; padding: 12px 18px; border-radius: 16px 16px 16px 4px; }
+  .l-bot-go { justify-self: center; font-size: 13px; padding: 11px 20px; }
+}
+
+/* The robot is a photo (photos/guide-robot.webp) with effects drawn over it. */
+.l-bot .bot-stage { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d;
+  transform: perspective(900px) rotateY(calc((var(--ex) + var(--lx)) * 9deg)) rotateX(calc(var(--ey) * -6deg)); transition: transform .5s var(--ease-out);
+  animation: botFloat 6s ease-in-out infinite; }
+.l-bot .bot-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 68%, transparent 98%), linear-gradient(to left, transparent 0, #000 16%);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(to bottom, #000 68%, transparent 98%), linear-gradient(to left, transparent 0, #000 16%); mask-composite: intersect; }
+.l-bot .bot-stage::before { content: ""; position: absolute; left: 12%; top: 0; width: 76%; height: 84%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(47, 107, 255, .32), transparent); }
+.l-bot .bot-eye-glow { position: absolute; left: 37.4%; top: 37.2%; width: 11%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(220, 250, 255, .95) 0 8%, rgba(79, 195, 255, .75) 22%, rgba(47, 139, 255, .25) 48%, transparent 70%);
+  mix-blend-mode: screen; animation: botEye 3s ease-in-out infinite; }
+.l-bot .bot-fx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.l-bot .bot-scan { opacity: 0; }
+.l-bot .bot-arrows path { fill: none; stroke: #7cf3ff; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.l-bot .bot-holo, .l-bot .bot-spark { opacity: 0; transform-box: view-box; transition: opacity .5s, transform .6s var(--ease-spring); }
+.l-bot .bot-holo { transform-origin: 37px 34px; transform: scale(.3); }
+.l-bot .bot-route { fill: none; stroke: #7cf3ff; stroke-width: 1.1; stroke-linecap: round; stroke-dasharray: 2 2.2; animation: botRoute 1.2s linear infinite; }
+.l-bot .bot-spark path { fill: #ffd76b; }
+
+/* 1 · Origin: a scan sweeps over its head as it says hello */
+.l-guide[data-step="1"] .bot-scan { animation: botScan 2.6s ease-in-out infinite; }
+/* 2 · Departments: looks at the text; arrows show the way */
+.l-guide[data-step="2"] { --lx: -.6; }
+.l-guide[data-step="2"] .bot-arrows path { animation: botArrow 1.2s ease-in-out infinite; }
+.l-guide[data-step="2"] .bot-arrows path:nth-child(2) { animation-delay: .15s; }
+.l-guide[data-step="2"] .bot-arrows path:nth-child(3) { animation-delay: .3s; }
+/* 3 · Degrees: its eye projects a map with a walking route */
+.l-guide[data-step="3"] .bot-holo { opacity: 1; transform: none; }
+.l-guide[data-step="3"] .bot-eye-glow { animation-duration: 1.2s; }
+/* 4 · Research: eye flares, sparkles */
+.l-guide[data-step="4"] .bot-spark { opacity: 1; }
+.l-guide[data-step="4"] .bot-spark path { animation: botPulse 1.2s ease-in-out infinite; }
+.l-guide[data-step="4"] .bot-eye-glow { width: 15%; }
+/* Tap: a quick nod */
+.l-bot.hop .bot-stage { animation: botHop .5s var(--ease-spring); }
+
+@keyframes botFloat { 50% { translate: 0 -6px; } }
+@keyframes botEye { 50% { opacity: .6; scale: .85; } }
+@keyframes botPulse { 50% { opacity: .55; } }
+@keyframes botScan { 0% { transform: translateY(-6px); opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(70px); opacity: 0; } }
+@keyframes botArrow { 0%, 100% { opacity: 0; transform: translateX(3px); } 50% { opacity: 1; transform: none; } }
+@keyframes botRoute { to { stroke-dashoffset: -8.4; } }
+@keyframes botHop { 40% { translate: 0 -8px; scale: 1.03; } }
 
 /* --- 03 · Programme cards --- */
 .l-cards { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 4px 16px 16px; scrollbar-width: none; }
@@ -801,10 +848,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: linear-gradient(180deg, rgba(4,8,20,.45) 0%, rgba(11,58,168,.25) 45%, rgba(4,8,20,.92) 100%);
 }
 .l-card.photo:hover::before { transform: scale(1.06); }
-/* One photo per degree: a FIT computer lab, a FIT student team, a robot for AI. */
+/* One photo per degree: a FIT computer lab, a FIT student team, FIT students with their chess-playing robot for AI. */
 .l-card.p-it { --photo: url("../photos/degree-it.jpg"); --pos: 50% 50%; }
 .l-card.p-itm { --photo: url("../photos/degree-itm.jpg"); --pos: 45% 40%; }
-.l-card.p-ai { --photo: url("../photos/degree-ai.jpg"); --pos: 58% 35%; }
+.l-card.p-ai { --photo: url("../photos/degree-ai.jpg"); --pos: 58% 45%; }
 .l-card.photo h3 { text-shadow: 0 2px 20px rgba(4,8,20,.8); }
 .l-card.dark { color: var(--text); background: radial-gradient(120% 90% at 100% 0%, rgba(79,140,255,.28), transparent 55%), linear-gradient(160deg, var(--card-a), var(--card-b)); border: 1px solid var(--line); }
 @media (min-width: 900px) {

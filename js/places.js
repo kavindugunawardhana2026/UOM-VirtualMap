@@ -52,6 +52,9 @@ window.EXTRA_PATHS = [
   // Resources Engineering to the Goda Canteen road.
   [[6.795552, 79.899921], [6.79554, 79.900084], [6.795514, 79.900321], [6.795503, 79.900601], [6.79549, 79.900816]],
   [[6.795552, 79.899921], [6.795732, 79.899966], [6.795966, 79.899999], [6.796286, 79.90001], [6.796607, 79.900049]],
+  // Rubert Peiris Building (marked on the map by the team): the path from the Main
+  // Street past the Exam Hall stops short of the building; this is the last bit to its door.
+  [[6.795884, 79.901778], [6.795822, 79.90193], [6.795773, 79.902034]],
 ];
 
 window.CATEGORIES = {
@@ -126,8 +129,9 @@ window.PLACES = [
   { id: "wala-canteen", name: "Wala Canteen", si: "වල කැන්ටිම", aka: ["Canteen"],
     cat: "food", osm: "220298434", at: [6.796924, 79.899578],
     photos: [{ src: "photos/wala-canteen.jpg", caption: "Inside" }] },
-  { id: "food-court", name: "Food Court & Study Area", si: "ආහාර සහ අධ්‍යයන ප්‍රදේශය",
-    aka: ["Canteen"], cat: "food", osm: "257709525", at: [6.796297, 79.900585] },
+  { id: "food-court", name: "Central Study Area", si: "මධ්‍යම අධ්‍යයන ප්‍රදේශය",
+    aka: ["Food Court", "Food Court & Study Area", "Study Area", "Canteen"], cat: "food", icon: "📖",
+    osm: "257709525", at: [6.796297, 79.900585] },
   // The university's canteen page puts this canteen in the L Block. The pin is on
   // the L Building; move `at` to the canteen door after checking on site.
   { id: "l-canteen", name: "L Canteen", si: "L කැන්ටිම", aka: ["Canteen", "L Block Canteen"],
@@ -169,6 +173,18 @@ window.PLACES = [
     cat: "other", osm: "233522243", at: [6.796451, 79.899693] },
   { id: "architecture", name: "Faculty of Architecture (New Building)",
     aka: ["Architecture"], cat: "faculty", icon: "📐", osm: "540767240", at: [6.795447, 79.901524], floors: 4 },
+  // Faculty of Architecture building with the main auditorium (uom.lk spells it "Rubert").
+  { id: "rubert-peiris", name: "Rubert Peiris Building",
+    aka: ["Robert Peiris Building", "Rupert Peiris", "Prof. Rupert Peiris Auditorium", "Architecture Auditorium", "Auditorium"],
+    cat: "faculty", icon: "🎤", osm: "540767239", at: [6.795675, 79.902128], entrance: [6.795773, 79.902034],
+    desc: "Faculty of Architecture building with the main auditorium, next to Building Economics." },
+  // At the south-west corner of the playground; the one with solar panels on the roof.
+  // People walk in from inside campus, along the road north of the Sumanadasa Building,
+  // so the entrance is on that road at the building's east side (not the outside road
+  // on its west).
+  { id: "steel-building", name: "Steel Building", aka: ["Steel"],
+    cat: "faculty", icon: "🏗️", osm: "540886906", at: [6.797313, 79.898684], entrance: [6.797239, 79.898923],
+    desc: "Big solar-roofed building at the south-west corner of the playground." },
   { id: "ce-lab", name: "Civil Engineering Research Lab", cat: "other",
     osm: "395935833", at: [6.797976, 79.902657], floors: 4 },
   { id: "accimt", name: "Arthur C. Clarke Institute (ACCIMT)", aka: ["ACCIMT"],

@@ -315,7 +315,7 @@
       </div>`;
     const items = results.map(({ place: p, room: r }, i) => {
       const c = CATEGORIES[p.cat] || CATEGORIES.other;
-      const sub = r ? `${esc(r.code)} · ${esc(r.floor || "")} — in ${esc(p.name)}` : esc(p.si || c.label);
+      const sub = r ? `${esc(r.code)} · ${esc(r.floor || "")} — in ${esc(p.name)}` : esc(c.label);
       return `<li style="--i:${i}"><button data-go="${esc(p.id)}" ${r ? `data-room="${esc(r.code)}"` : ""}>
         <span class="ico" style="background:linear-gradient(135deg, ${c.color}33, ${c.color}14)">${placeIcon(p)}</span>
         <span><div class="t">${esc(r ? r.name : p.name)}</div><div class="s">${sub}</div></span>
@@ -372,7 +372,7 @@
     body.innerHTML = `
       <div class="place-hero" style="--c:${c.color}">
         <div class="ph-emoji">${placeIcon(p)}</div>
-        <div><span class="ph-cat">${esc(c.label)}</span><h2 data-scramble>${esc(room ? room.name : p.name)}</h2><div class="si">${esc(room ? `in ${p.name}` : p.si || "")}</div></div>
+        <div><span class="ph-cat">${esc(c.label)}</span><h2 data-scramble>${esc(room ? room.name : p.name)}</h2>${room ? `<div class="si">in ${esc(p.name)}</div>` : ""}</div>
         <button class="icon-btn back" id="back" aria-label="Back to list">✕</button>
       </div>
       ${room?.floor || room?.code ? `<div class="badges">
@@ -442,7 +442,7 @@
     if (e.key === "Enter") { const first = body.querySelector(".list [data-go]"); if (first) first.click(); }
   });
   clearQ.onclick = () => { q.value = ""; state.query = ""; clearQ.hidden = true; render(); q.focus(); };
-  FX.typePlaceholder(q, ["IT Faculty…", "ගොඩ කැන්ටිම…", "Library…", "Medical Center…", "Lecture halls…", "Gym…"]);
+  FX.typePlaceholder(q, ["IT Faculty…", "Goda Canteen…", "Library…", "Medical Center…", "Lecture halls…", "Gym…"]);
 
   const chips = $("#chips");
   const chipList = [

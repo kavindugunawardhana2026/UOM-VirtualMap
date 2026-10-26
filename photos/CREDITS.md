@@ -35,6 +35,7 @@ Ask the owner before reusing them elsewhere, and replace any photo if its owner 
 | `faculty-aerial.jpg`, `faculty-aerial-sm.jpg` | Landing page hero | Supplied by the project team | Drone view of the Faculty of IT at sunrise. |
 | `degree-it.jpg` | BSc Hons IT card | https://uom.lk/itfac (slideshow `banner3.jpg`, right half) | FIT computer lab. Enlarged from 427 × 300. |
 | `degree-itm.jpg` | BSc Hons IT & M card | https://uom.lk/itfac (slideshow `banner3.jpg`, left half) | FIT students working as a team. Enlarged from 466 × 300. |
-| `degree-ai.jpg` | BSc Hons AI card | https://unsplash.com/photos/white-robot-near-brown-wall-2EJCSULRwC8 (photo by Alex Knight) | Pepper robot. Unsplash License (free to use, no permission needed). |
+| `degree-ai.jpg` | BSc Hons AI card | https://itfac.uom.ac.lk/gallery/ (`images/gallery/1.jpg`) | FIT EXPO 2025, Batch 23: students with their "Chess Navigator" robot. Photographed by Dinusha Ekanayake and Achira Sandaruwan for FIT Moments (IT Faculty Media Unit). The event banner along the bottom is cropped off. |
+| `guide-robot.webp` | Robot guide on the landing page | https://unsplash.com/photos/a-white-robot-is-standing-in-front-of-a-black-background-CjWsslYVnPI | Unsplash License (free to use). Cropped, flipped to face left, black background removed, and the yellow eye recoloured blue. |
 
-The About card uses `it-faculty.jpg` (listed above).
+The About card uses `fit-building.jpg`: the FIT building with its name sign, supplied by the project team.
