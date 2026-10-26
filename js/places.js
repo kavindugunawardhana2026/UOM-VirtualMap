@@ -153,7 +153,7 @@ window.PLACES = [
     desc: "Directly in front of Patuwatha, by New Hostel Road. Just outside the Back Gate." },
   { id: "nugasewana", name: "Nugasewana Hostel Complex", si: "නුගසෙවන නේවාසිකාගාරය",
     cat: "hostel", osm: "395935839", at: [6.799146, 79.902097], floors: 4 },
-  { id: "girls-hostel", name: "B Hostel", si: "B නේවාසිකාගාරය", aka: ["HB", "Girls' Hostel", "Girls Hostel"],
+  { id: "girls-hostel", name: "B, C Hostel", si: "B, C නේවාසිකාගාරය", aka: ["B Hostel", "C Hostel", "HB", "HC", "Girls' Hostel", "Girls Hostel"],
     cat: "hostel", osm: "395935918", at: [6.796881, 79.902756], floors: 3 },
   { id: "boys-hostel", name: "A Hostel", si: "A නේවාසිකාගාරය", aka: ["HA", "Boys' Hostel", "Boys Hostel"],
     cat: "hostel", osm: "1444650030", at: [6.797339, 79.902217], floors: 3 },
